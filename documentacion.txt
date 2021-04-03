@@ -23,6 +23,7 @@ uno debe enviar una parte para tener el total de la información en el cliente.(
 
 7. Una vez descargada la información, el cliente solicitante debe reproducir la canción
 o una de las canciones que se descargó en caso de que sea un álbum.
+
 8. Para el intercambio de información y datos entre las partes involucradas se debe
 usar JSON.
 

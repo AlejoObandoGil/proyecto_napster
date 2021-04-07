@@ -8,7 +8,5 @@ s = xmlrpc.client.ServerProxy('http://localhost:9999')
 
 print("Servidor escuchando...")
 
-print (s.searchTrack()) 
-print (s.searchAlbum()) 
-
-
+print (s.buscarAlbum()) 
+print (s.buscarCancion())

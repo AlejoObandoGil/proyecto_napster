@@ -8,8 +8,7 @@ from tinytag import TinyTag, TinyTagException
 # -------------------------------------------------CONFIGURACION CONEXION--------------------------------------------------
 
 host = "localhost"
-port = 9999
-
+port = 9998
 # Restrict to a particular path.
 class RequestHandler(SimpleXMLRPCRequestHandler):
     rpc_paths = ('/RPC2',)
@@ -18,16 +17,9 @@ class RequestHandler(SimpleXMLRPCRequestHandler):
 server = SimpleXMLRPCServer((host, port), requestHandler=RequestHandler, allow_none=True) 
 server.register_introspection_functions()
 
-print("\n************************BETA NAPSTER RPC*******************************")
-print("\nCliente conectado...")
-
-username = input("Digita un nombre de usuario para identificarte en NAPSTER: ")
+print("Cliente conectado...")
 
 # ---------------------------------------FUNCIONES BUSCAR EN CARPETA LOCAL CLIENTE-----------------------------------------
-
-# def dataClient():
-#     pass
-#     return 
 
 # Esta funcion busca canciones sin album
 def searchTrack():
@@ -37,7 +29,7 @@ def searchTrack():
     data = ""
     # Este for lee el directorio raiz, sus subcarpetas y archivos. El metodo walk sirve para leer un directorio
     numTracks = 0
-    for root, dirs, files, in os.walk("D:\\musica\\Musica alejo"):
+    for root, dirs, files, in os.walk("D:\\musica\\alejo\\bob marley"):
 
         for name in files:
             # Si extension del archivo es tipo musica agregamos a lista
@@ -52,7 +44,7 @@ def searchTrack():
                     # data = "%02d:%02d" % (m, s)
                     # durationMinute = float(duration) / 60.00
 
-                    lsDataTracks = [temp_track.artist, temp_track.title, duration, temp_track.filesize]
+                    lsDataTracks = [temp_track.artist, temp_track.title, data, temp_track.filesize]
                     lsTracks.append(lsDataTracks)
                     numTracks += 1                   
                     
@@ -64,7 +56,7 @@ def searchTrack():
     print("\nNUMERO DE CANCIONES: ", numTracks)
     print("\nNUMERO DE NOMBRES DE CANCIONES: ", lsNameTracks)
 
-    return host, port, username, lsTracks, numTracks  
+    return lsTracks, numTracks, host, port
 
 # Esta funcion busca albumes. Los albumes estan en una carpeta diferente de las canciones individuales.
 def searchAlbum():
@@ -94,12 +86,11 @@ def searchAlbum():
     return lsAlbums, tracksDuration
 
 # --------------------------------------------EJECUCION E HILOS------------------------------------------------------
-# dataClient()
+
 searchTrack()
 searchAlbum()    
 
 # Funciones registradas para enviar a Servidor Principal
-# server.register_function(dataClient)
 server.register_function(searchTrack)
 server.register_function(searchAlbum)
 

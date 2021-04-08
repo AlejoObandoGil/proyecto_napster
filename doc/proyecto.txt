@@ -39,3 +39,4 @@ Consideraciones para la entrega:
    3.1. Avances presentados en las semanas anteriores.
    3.2. Funcionalidad del proyecto
    3.3. Sustentación individual.
+

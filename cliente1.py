@@ -11,9 +11,9 @@ from enviarDatos import sendTrack, sendAlbum
 # -------------------------------------------------CONFIGURACION CONEXION--------------------------------------------------
 # socket.gethostname
 host1 = "127.0.0.1"
-port1 = 9998
+port1 = 9999
 host2 = "127.0.0.1"
-port2 = 9898
+port2 = 9899
 portTest = 2869
 
 # Restrict to a particular path.
@@ -106,7 +106,6 @@ if clientConnected == True or clientConnected2 == True:
    
 else :
     print("Error fatal al ejecutar servicios del cliente.")    
-
 
 
 

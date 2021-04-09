@@ -1,5 +1,5 @@
-import xmlrpc.client
 import os
+import xmlrpc.client
 from tinytag import TinyTag, TinyTagException
 ## Python 3.7
 ## Servidor Principal RPC: Los clientes se conectan en primera instancia con este servidor, si falla, los clientes conectaran con el servidor2

@@ -1,4 +1,4 @@
-REFERENCIAS LIBRERIAS
+REFERENCIAS LIBRERIAS PYTHON
 
 [1] TinyTag:
 
@@ -53,11 +53,13 @@ netstat
 
 
 
-REFRENCIAS BIBLIOGRAFICAS
+REFRENCIAS BIBLIOGRAFICAS PYTHON
 
 libreria TinyTag
 [1] https://pypi.org/project/tinytag/
 
-
 enviar archivos RPC 
 [2] https://stackoverflow.com/questions/9099174/send-file-from-client-to-server-using-xmlrpc
+
+leer archivos
+[3]https://j2logo.com/python/listar-directorio-en-python/#listar-listdir

@@ -1,9 +1,7 @@
 from xmlrpc.server import SimpleXMLRPCServer
 from xmlrpc.server import SimpleXMLRPCRequestHandler
-import xmlrpc.client
 import threading
 import os
-from tinytag import TinyTag, TinyTagException
 from enviarDatos import sendTrack, sendAlbum
 # Python 3.7
 # Cliente RPC
@@ -21,12 +19,6 @@ class RequestHandler(SimpleXMLRPCRequestHandler):
     rpc_paths = ('/RPC2',)
 
 print("\n************************BETA NAPSTER RPC*******************************")    
-
-file = open("musica\\cliente1\\canciones1\\Metallica - Nothing Else Matters - Live.mp3", "rb")
-file_data = xmlrpc.client.Binary(file.read(1024))
-if file:
-    print("Archivo leido: ", file)
-file.close()
 
 # Funcion que conecta con servidores
 def conectionServer():

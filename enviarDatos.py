@@ -1,13 +1,16 @@
 # ---------------------FUNCIONES BUSCAR MUSICA EN CARPETA LOCAL CLIENTE---------------------------------------
 import os
-from tinytag import TinyTag, TinyTagException
+import xmlrpc.client
 import datetime
-# Esta funcion busca canciones invididuales o sin album
+from tinytag import TinyTag, TinyTagException
+
+# Esta funcion busca canciones invididuales o sin album en la carpeta local del cliente
 def sendTrack():
 
     lsNameTracks = []
     lsDataTracks = []
     lsTracks = []
+    lsFileTracks = []
     numTracks = 0
     data = ""   
     # Este for lee el directorio raiz, sus subcarpetas y archivos. El metodo walk sirve para leer un directorio    
@@ -24,6 +27,12 @@ def sendTrack():
                     d = str(temp_track.duration)
                     durationMinute = round(float(d), 2)
                     duration = str(datetime.timedelta(seconds=durationMinute))
+                    file = open("musica\\cliente1\\canciones1\\" + name, "rb")
+                    file_data = file.read(1024)
+                    lsFileTracks.append(file_data)
+                    if file:
+                        print("Archivo leido: ", file)
+                    file.close()
                     
                     # Creamos una lista con los metadatos de cada cancion y agregamos estas listas a otra lista para tener una matriz de canciones
                     lsDataTracks = [temp_track.artist, temp_track.title, duration, temp_track.filesize]
@@ -32,14 +41,25 @@ def sendTrack():
                     
                 except TinyTagException:
                     print("Error. No se puede leer el archivo.")
-        # lista.clear()              
+        # lista.clear()
+        data = open("musica\\cliente1\\canciones1\\Desert.jpg", "rb")
+        data = data.read(1024)
+
+        file = open("musica\\cliente3\\desert.jpg", "wb")
+        file.write(data)
+        file.close()
+        print("HEcho")
+    
+    print("\nLISTA DE CANCIONES: ", lsFileTracks)            
     print("\nLISTA DE CANCIONES: ", lsTracks) 
     print("\nNUMERO DE CANCIONES: ", numTracks)
     print("\nLISTA DE NOMBRES DE CANCIONES: ", lsNameTracks)
 
     return lsTracks, numTracks  
 
-# Esta funcion busca albumes. Los albumes estan en una carpeta diferente de las canciones individuales.
+sendTrack()
+
+# Esta funcion busca albumes en la carptea lcoal del cliente. Los albumes estan en una carpeta diferente de las canciones individuales.
 def sendAlbum():
 
     lsAlbums = []
@@ -56,20 +76,20 @@ def sendAlbum():
     # Es for hace la funcion de buscar las canciones
     for root, dirs, files, in os.walk("musica\\cliente1\\Albums1"):
 
-        for named in dirs:
-            lsAlbums.append(named)
+        for dirName in dirs:
+            lsAlbums.append(dirName)
             numAlbums += 1
-            for root, dirs, files, in os.walk("musica\\cliente1\\Albums1\\" + named):
-                for namet in files:                              
-                    if namet.endswith((".mp3", ".mp4a", ".flac", ".alac", ".wav", ".wma", ".ogg")):               
+            for root, dirs, files, in os.walk("musica\\cliente1\\Albums1\\" + dirName):
+                for trackName in files:                              
+                    if trackName.endswith((".mp3", ".mp4a", ".flac", ".alac", ".wav", ".wma", ".ogg")):               
                         try:
-                            temp_track = TinyTag.get(root + "\\" + namet)
+                            temp_track = TinyTag.get(root + "\\" + trackName)
 
                             d = str(temp_track.duration)
                             durationMinute = round(float(d), 2)
                             duration = str(datetime.timedelta(seconds=durationMinute))
                             
-                            lsDataTracks = [named, temp_track.artist, temp_track.title, duration, temp_track.filesize]
+                            lsDataTracks = [dirName, temp_track.artist, temp_track.title, duration, temp_track.filesize]
                             lsTracks.append(lsDataTracks)
                             numTracks += 1
                             

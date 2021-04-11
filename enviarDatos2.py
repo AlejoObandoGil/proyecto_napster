@@ -27,11 +27,10 @@ def sendTrack(username):
                     d = str(temp_track.duration)
                     durationMinute = round(float(d), 2)
                     duration = str(datetime.timedelta(seconds=durationMinute))
+                   
                     file = open("musica\\cliente2\\canciones2\\" + name, "rb")
-                    file_data = file.read(1024)
+                    file_data = file.read()
                     lsFileTracks.append(file_data)
-                    if file:
-                        print("Archivo leido: ", file)
                     file.close()
                     
                     # Creamos una lista con los metadatos de cada cancion y agregamos estas listas a otra lista para tener una matriz de canciones
@@ -49,8 +48,7 @@ def sendTrack(username):
         # file.write(data)
         # file.close()
         # print("HEcho")
-    
-    print("\nLISTA DE CANCIONES: ", lsFileTracks)            
+                
     print("\nLISTA DE CANCIONES: ", lsTracks) 
     print("\nNUMERO DE CANCIONES: ", numTracks)
     print("\nLISTA DE NOMBRES DE CANCIONES: ", lsNameTracks)
@@ -65,6 +63,7 @@ def sendAlbum(username):
     lsDataTracks = []
     lsTracks = []
     lsAT = []
+    lsFileTracks = []
     numAlbums = 0
     numTracks = 0   
 
@@ -85,6 +84,11 @@ def sendAlbum(username):
                             durationMinute = round(float(d), 2)
                             duration = str(datetime.timedelta(seconds=durationMinute))
                             
+                            file = open("musica\\cliente2\\Albums2\\" + dirName + "\\" + trackName, "rb")
+                            file_data = file.read()
+                            lsFileTracks.append(file_data)
+                            file.close()
+
                             lsDataTracks = [temp_track.title, temp_track.artist, dirName, duration, temp_track.filesize, username]
                             lsTracks.append(lsDataTracks)
                             numTracks += 1
@@ -95,6 +99,10 @@ def sendAlbum(username):
     print("\nLISTA DE ALBUMS: ", lsAlbums)
     print("\nNUMERO DE ALBUMS: ", numAlbums) 
     print("\nLISTA DE CANCIONES: ", lsTracks) 
-    print("\nNUMERO DE CANCIONES: ", numTracks)                 
+    print("\nNUMERO DE CANCIONES: ", numTracks)     
+ # print("\nLISTA ARCHIVOS EN ALBUM: ", lsFileTracks)              
 
-    return lsAlbums, numAlbums, lsTracks, numTracks
+    return lsAlbums, numAlbums, lsTracks, numTracks, lsFileTracks
+
+
+# sendAlbum("seth")

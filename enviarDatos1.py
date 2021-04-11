@@ -4,15 +4,6 @@ import xmlrpc.client
 import datetime
 from tinytag import TinyTag, TinyTagException
 
-# lista.clear()
-# data = open("musica\\cliente1\\canciones1\\acdc - back in black.mp3", "rb")
-# data = data.read()
-
-# file = open("musica\\cliente1\\albums1\\album2\\acdc - back in black.mp3", "wb")
-# file.write(data)
-# file.close()
-# print("HEcho")
-
 # Esta funcion busca canciones invididuales o sin album en la carpeta local del cliente
 def sendTrack(username):
 
@@ -21,7 +12,7 @@ def sendTrack(username):
     lsTracks = []
     lsFileTracks = []
     numTracks = 0
-    data = ""   
+  
     # Este for lee el directorio raiz, sus subcarpetas y archivos. El metodo walk sirve para leer un directorio    
     for root, dirs, files, in os.walk("musica\\cliente1\\canciones1"):
 
@@ -36,11 +27,10 @@ def sendTrack(username):
                     d = str(temp_track.duration)
                     durationMinute = round(float(d), 2)
                     duration = str(datetime.timedelta(seconds=durationMinute))
-                    file = open("musica\\cliente1\\canciones1" + name, "rb")
-                    file_data = file.read()
+                   
+                    file = open("musica\\cliente1\\canciones1\\" + name, "rb")
+                    file_data = file.read(1024)
                     lsFileTracks.append(file_data)
-                    if file:
-                        print("Archivo leido: ", file)
                     file.close()
                     
                     # Creamos una lista con los metadatos de cada cancion y agregamos estas listas a otra lista para tener una matriz de canciones
@@ -50,11 +40,18 @@ def sendTrack(username):
                     
                 except TinyTagException:
                     print("Error. No se puede leer el archivo.")
-    
-    # print("\nLISTA DE CANCIONES: ", lsFileTracks)            
+        # lista.clear()
+        # data = open("doc\\proy.txt", "rb")
+        # data = data.read(1024)
+
+        # file = open("doc\\proy.txt", "wb")
+        # file.write(data)
+        # file.close()
+        # print("HEcho")
+                
     print("\nLISTA DE CANCIONES: ", lsTracks) 
     print("\nNUMERO DE CANCIONES: ", numTracks)
-    #print("\nLISTA DE NOMBRES DE CANCIONES: ", lsNameTracks)
+    print("\nLISTA DE NOMBRES DE CANCIONES: ", lsNameTracks)
 
     return lsTracks, numTracks, lsFileTracks  
 
@@ -66,6 +63,7 @@ def sendAlbum(username):
     lsDataTracks = []
     lsTracks = []
     lsAT = []
+    lsFileTracks = []
     numAlbums = 0
     numTracks = 0   
 
@@ -86,6 +84,11 @@ def sendAlbum(username):
                             durationMinute = round(float(d), 2)
                             duration = str(datetime.timedelta(seconds=durationMinute))
                             
+                            file = open("musica\\cliente1\\Albums1\\" + dirName + "\\" + trackName, "rb")
+                            file_data = file.read()
+                            lsFileTracks.append(file_data)
+                            file.close()
+
                             lsDataTracks = [temp_track.title, temp_track.artist, dirName, duration, temp_track.filesize, username]
                             lsTracks.append(lsDataTracks)
                             numTracks += 1
@@ -93,9 +96,13 @@ def sendAlbum(username):
                         except TinyTagException:
                             print("Error. No se puede leer el archivo.")               
 
-    # print("\nLISTA DE ALBUMS: ", lsAlbums)
+    print("\nLISTA DE ALBUMS: ", lsAlbums)
     print("\nNUMERO DE ALBUMS: ", numAlbums) 
     print("\nLISTA DE CANCIONES: ", lsTracks) 
-    print("\nNUMERO DE CANCIONES: ", numTracks)                 
+    print("\nNUMERO DE CANCIONES: ", numTracks)     
+ # print("\nLISTA ARCHIVOS EN ALBUM: ", lsFileTracks)              
 
-    return lsAlbums, numAlbums, lsTracks, numTracks
+    return lsAlbums, numAlbums, lsTracks, numTracks, lsFileTracks
+
+
+# sendAlbum("seth")

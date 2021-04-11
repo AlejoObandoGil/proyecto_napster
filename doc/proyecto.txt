@@ -16,7 +16,7 @@ LISTO
 
 4. Desde cualquier cliente se debe poder pedir el listado de álbumes o canciones al
 servidor teniendo en cuenta que los criterios de búsqueda son: artista, álbum o canción.
-LISTO
+EN PROCESO
 
 5. El servidor envía al cliente la dirección y puerto de todos los clientes que poseen
 el álbum o la canción solicitada.

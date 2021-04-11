@@ -3,108 +3,140 @@ from xmlrpc.server import SimpleXMLRPCRequestHandler
 import xmlrpc.client
 import threading
 import os
-from tinytag import TinyTag, TinyTagException
 from enviarDatos2 import sendTrack, sendAlbum
 # Python 3.7
 # Cliente RPC
 
 # -------------------------------------------------CONFIGURACION CONEXION--------------------------------------------------
 # socket.gethostname
+# direcciones para los servidores
+# Servidor 1
 host1 = "127.0.0.1"
 port1 = 9998
+# Servidor2
 host2 = "127.0.0.1"
 port2 = 9898
+
 portTest = 2869
+
+# direcciones para los clientes que se conecten
+global host3
+global port3
+host3 = "127.0.0.1"
+port3 = 9798
+host4 = "127.0.0.1"
+port4 = 9698
 
 # Restrict to a particular path.
 class RequestHandler(SimpleXMLRPCRequestHandler):
     rpc_paths = ('/RPC2',)
 
-print("\n************************BETA NAPSTER RPC*******************************")    
-
-file = open("musica\\cliente1\\canciones1\\Metallica - Nothing Else Matters - Live.mp3", "rb")
-file_data = xmlrpc.client.Binary(file.read(1024))
-if file:
-    print("Archivo leido: ", file)
-file.close()
+print("\n************************BETA NAPSTER RPC*******************************")  
 
 # Funcion que conecta con servidores
-def conectionServer():
-    # Variables bandera para conocer el servidor al que esta conectado este cliente
-    global clientConnected 
-    clientConnected = False
-    global clientConnected2
-    clientConnected2 = False
-    # Si el servidor1 esta activo conecta con ese
-    if clientConnected == False:
-        try:
-            # Crear conexion Servidor RPC 
-            server1 = SimpleXMLRPCServer((host1, portTest), requestHandler=RequestHandler, allow_none=True) 
-            server1.register_introspection_functions()
-            print("\nCliente conectando a servidor Principal...")
-            clientConnected = True
 
-            return server1
-        except:
-            print("\nError. No se puede establecer conexion a servidor Principal")
-            clientConnected = False
-            # Si el servidor1 esta inactivo intenta conectar con servidor2
-            if clientConnected == False:            
-                server2 = SimpleXMLRPCServer((host2, port2), requestHandler=RequestHandler, allow_none=True) 
-                server2.register_introspection_functions()
-                print("\nCliente conectando a servidor Secundario...")
-                clientConnected2 = True
-
-                return server2
-            else:
-                print("\nError. No se puede establecer conexion a servidor Secundario")  
-                clientConnected2 = False 
-    else:
-        pass 
+# Variables bandera para conocer el servidor al que esta conectado este cliente
+global clientConnected 
+clientConnected = False
+global clientConnected2
+clientConnected2 = False
+# Si el servidor1 esta activo se conecta con ese
+if clientConnected == False:
+    try:
+        # Crear conexion para un Servidor RPC, con el metodo client de xmlrpc 
+        cliente1 = xmlrpc.client.ServerProxy('http://127.0.0.1:9000', allow_none=True)
+        print("\nCliente conectando a servidor Principal...")
+        clientConnected = True
+        cliente1.connectionExist(clientConnected)
+    except:
+        print("\nError. No se puede establecer conexion a servidor Principal.")
+        clientConnected = False
+        # Si el servidor1 esta inactivo intenta conectar con servidor2
+        if clientConnected == False: 
+            global cliente2           
+            cliente2 = xmlrpc.client.ServerProxy('http://127.0.0.1:9898', allow_none=True)
+            print("\nCliente conectando a servidor Secundario...")
+            clientConnected2 = True
+            cliente2.connectionExist(clientConnected2)
+        else:
+            print("\nError. No se puede establecer conexion a servidor Secundario.")  
+            clientConnected2 = False
+else:
+    print("Error fatal. No consiguio conectarse con ningun servidor.")             
 
 
 def dataClient():
 
-    username = "natica" # input("Digita un nombre de usuario para identificarte en NAPSTER: ")
+    global username
+    username = "Platon" # input("Digita un nombre de usuario para identificarte en NAPSTER: ")
+    print("sdfsdsds")
+    print(clientConnected)
 
     if clientConnected == True:  
-        print("\nHola", username, "Bienvenido a NAPSTER.\nTe conectaste desde Direccion: ", host1, " Puerto: ", port1)    
+        print("\nHola", username, "Bienvenido a NAPSTER.\nTe conectaste al servidor Principal desde: Direccion: ", host1, " Puerto: ", port1)    
+        print("La Direccion de ", username, "para conectarse a otros clientes es: ", host3, " y el puerto es: ", port3)
+        return username, host3, port3  
+
+    print(clientConnected2) 
+
+    if clientConnected2 == True:  
+        print("\nHola", username, "Bienvenido a NAPSTER.\nTe conectaste desde el servidor Secundario desde: Direccion: ", host2, " Puerto: ", port2)    
+        print("La Direccion de ", username, "para conectarse a otros clientes es: ", host3, " y el puerto es: ", port3)
+        return username, host3, port3       
     
-        return username, host1, port1
-    elif clientConnected2 == True:  
-        print("\nHola", username, "Bienvenido a NAPSTER.\nTe conectaste desde Direccion: ", host2, " Puerto: ", port2)    
-    
-        return username, host2, port2    
+
+def menu():
+    print("\nMENU PRINCIPAL DE NAPSTER\n")
+    song = input("Escribe el nombre de una cancion: ")
+
+    return song
 
 # --------------------------------------------EJECUCION E HILOS------------------------------------------------------
 
 # Hilo Responsable de enviar informacion al servidor1
-class serverThread(threading.Thread):
+class clientThread(threading.Thread):
 	def __init__(self):
-		threading.Thread.__init__(self)
+		threading.Thread.__init__(self)      
 
 	def run(self):
-         # Ejecutando funciones de servidor  
-        #  dataClient() 
-        #  sendTrack()
-        #  sendAlbum()
-         # Funciones registradas para enviar a Servidor Principal
-         server.register_function(dataClient)
-         server.register_function(sendTrack)
-         server.register_function(sendAlbum)  
-        #  server.register_instance(instance)
-         print("\nDatos compartidos con servidor correctamente...")        
-        # Ejecutar servidor en escucha
-         server.serve_forever()
+         username, host, port = dataClient()
+         lsTracks, numTrack, lsFileTracks  = sendTrack(username)
+         lsAlbums, numAlbum, lsTrackAlbums, numTrackAlbum, lsFileTracksA = sendAlbum(username)
+         
+         cliente1.listenClientData(username, host, port)
+         cliente1.listenClientSong(lsTracks, numTrack, lsFileTracks)
+         cliente1.listenClientAlbum(lsAlbums, numAlbum, lsTrackAlbums, numTrackAlbum, lsFileTracksA)
+         print("\nSe han compartido tus archivos locales con el servidor Principal de NAPSTER RPC.")
 
-server = conectionServer()
+# Hilo Responsable de enviar informacion al servidor2
+class clientThread2(threading.Thread):
+	def __init__(self):
+		threading.Thread.__init__(self)      
+
+	def run(self):
+         username, host, port = dataClient()       
+         lsTracks, numTrack, lsFileTracks  = sendTrack(username)
+         lsAlbums, numAlbum, lsTrackAlbums, numTrackAlbum, lsFileTracksA = sendAlbum(username)
+
+         cliente2.listenClientData(username, host, port)
+         cliente2.listenClientSong(lsTracks, numTrack, lsFileTracks)
+         cliente2.listenClientAlbum(lsAlbums, numAlbum, lsTrackAlbums, numTrackAlbum, lsFileTracksA)
+         print("\nSe han compartido tus archivos locales con el servidor Secundarios de NAPSTER RPC.")          
 
 # Dependiendo el servidor a que este conectado Ejecuta los hilos 
-if clientConnected == True or clientConnected2 == True:
-    serverSend = serverThread()
-    serverSend.start()   
+if clientConnected == True: 
+    clientSend = clientThread()
+    clientSend.start()
+elif clientConnected2 == True:
+    clientSend2 = clientThread2()
+    clientSend2.start()
 else :
-    print("Error fatal al ejecutar servicios del cliente.")    
+    print("Error fatal al ejecutar servicios del cliente!") 
+
+
+
+
+
 
 
 

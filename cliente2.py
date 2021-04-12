@@ -7,8 +7,9 @@ from enviarDatos2 import sendTrack, sendAlbum
 # Python 3.7
 # Cliente RPC
 
-# -------------------------------------------------CONFIGURACION CONEXION--------------------------------------------------
-# socket.gethostname
+# ----------------------------------------------------CLIENTE--------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------------------------
+# -----------------------------------------------CONFIGURACION CONEXION----------------------------------------------------
 # direcciones para los servidores
 # Servidor 1
 host1 = "127.0.0.1"
@@ -31,10 +32,9 @@ port4 = 9698
 class RequestHandler(SimpleXMLRPCRequestHandler):
     rpc_paths = ('/RPC2',)
 
-print("\n************************BETA NAPSTER RPC*******************************")  
+print("\n****************************NAPSTER RPC**********************************")  
 
 # Funcion que conecta con servidores
-
 # Variables bandera para conocer el servidor al que esta conectado este cliente
 global clientConnected 
 clientConnected = False
@@ -44,7 +44,7 @@ clientConnected2 = False
 if clientConnected == False:
     try:
         # Crear conexion para un Servidor RPC, con el metodo client de xmlrpc 
-        cliente1 = xmlrpc.client.ServerProxy('http://127.0.0.1:9000', allow_none=True)
+        cliente1 = xmlrpc.client.ServerProxy('http://' + host1 + ':' + str(port1), allow_none=True)
         print("\nCliente conectando a servidor Principal...")
         clientConnected = True
         cliente1.connectionExist(clientConnected)
@@ -54,7 +54,7 @@ if clientConnected == False:
         # Si el servidor1 esta inactivo intenta conectar con servidor2
         if clientConnected == False: 
             global cliente2           
-            cliente2 = xmlrpc.client.ServerProxy('http://127.0.0.1:9898', allow_none=True)
+            cliente2 = xmlrpc.client.ServerProxy('http://' + host2 + ':' + str(port2), allow_none=True)
             print("\nCliente conectando a servidor Secundario...")
             clientConnected2 = True
             cliente2.connectionExist(clientConnected2)
@@ -62,56 +62,76 @@ if clientConnected == False:
             print("\nError. No se puede establecer conexion a servidor Secundario.")  
             clientConnected2 = False
 else:
-    print("Error fatal. No consiguio conectarse con ningun servidor.")             
-
+    print("\nError fatal. No consiguio conectarse con ningun servidor.")             
 
 def dataClient():
 
     global username
-    username = "Platon" # input("Digita un nombre de usuario para identificarte en NAPSTER: ")
-    print("sdfsdsds")
-    print(clientConnected)
+    username = "Thanos" # input("Digita un nombre de usuario para identificarte en NAPSTER: ")
 
     if clientConnected == True:  
-        print("\nHola", username, "Bienvenido a NAPSTER.\nTe conectaste al servidor Principal desde: Direccion: ", host1, " Puerto: ", port1)    
+        print("\n", username, " ha iniciado sesion.\nTe conectaste al servidor Principal desde: Direccion: ", host1, " Puerto: ", port1)    
         print("La Direccion de ", username, "para conectarse a otros clientes es: ", host3, " y el puerto es: ", port3)
-        return username, host3, port3  
-
-    print(clientConnected2) 
+        return username, host3, port3   
 
     if clientConnected2 == True:  
-        print("\nHola", username, "Bienvenido a NAPSTER.\nTe conectaste desde el servidor Secundario desde: Direccion: ", host2, " Puerto: ", port2)    
+        print("\n", username, "ha iniciado sesion.\nTe conectaste desde el servidor Secundario desde: Direccion: ", host2, " Puerto: ", port2)    
         print("La Direccion de ", username, "para conectarse a otros clientes es: ", host3, " y el puerto es: ", port3)
         return username, host3, port3       
-    
 
-def menu():
-    print("\nMENU PRINCIPAL DE NAPSTER\n")
-    song = input("Escribe el nombre de una cancion: ")
+def main():
+   
+    while True:
+        print("\nMENU PRINCIPAL DE NAPSTER")
+        print(" 1. Buscar por canción")
+        print(" 2. Buscar por artista")
+        print(" 3. Buscar por álbum") 
+        print(" 4. Salir") 
+        opcion = (input("Escribe el número de la opción para buscar: "))
 
+        if opcion == "1":            
+            song = input("Escribe el nombre de una cancion: ")
+            songServer, titleServer, artistServer, durationServer, sizeServer, userServer, hostServer, portServer, message = cliente1.searchTrack(song)
+            print(message)
+            print ("\n- Nombre cancion:",songServer,"- Titulo:", titleServer, "- artista:",artistServer,  "- duracion:",durationServer, "- tamaño:",sizeServer, "- usuario:",userServer)
+            print ("host usuario:",hostServer, "port usuario:",portServer)
+
+            clienteCliente = xmlrpc.client.ServerProxy('http://' + hostServer + ':' + str(portServer), allow_none=True)
+            print("\nCliente conectando a cliente" + username)
+            
+        elif opcion == "2":
+            song = input("Escribe el nombre de un artista: ")
+                    
+        elif opcion == "3":
+            song = input("Escribe el nombre de un album: ")
+
+        elif opcion == "0":
+            print("\nCerrando cliente NAPSTER...")   
+            break
     return song
-
 # --------------------------------------------EJECUCION E HILOS------------------------------------------------------
 
 # Hilo Responsable de enviar informacion al servidor1
-class clientThread(threading.Thread):
-	def __init__(self):
-		threading.Thread.__init__(self)      
+class ClientThread(threading.Thread):
+	def _init_(self):
+		threading.Thread._init_(self)      
 
 	def run(self):
          username, host, port = dataClient()
-         lsTracks, numTrack, lsFileTracks  = sendTrack(username)
-         lsAlbums, numAlbum, lsTrackAlbums, numTrackAlbum, lsFileTracksA = sendAlbum(username)
+         lsTracks, numTrack = sendTrack(username)
+         lsAlbums, numAlbum, lsTrackAlbums, numTrackAlbum = sendAlbum(username)
          
          cliente1.listenClientData(username, host, port)
-         cliente1.listenClientSong(lsTracks, numTrack, lsFileTracks)
-         cliente1.listenClientAlbum(lsAlbums, numAlbum, lsTrackAlbums, numTrackAlbum, lsFileTracksA)
-         print("\nSe han compartido tus archivos locales con el servidor Principal de NAPSTER RPC.")
+         cliente1.listenClientSong(lsTracks, numTrack)
+         cliente1.listenClientAlbum(lsAlbums, numAlbum, lsTrackAlbums, numTrackAlbum)
+         print("\nSe han compartido tus archivos locales con el servidor Principal.")
+         main()
+         print("\nPetición ejecutada con exito!")   
 
 # Hilo Responsable de enviar informacion al servidor2
-class clientThread2(threading.Thread):
-	def __init__(self):
-		threading.Thread.__init__(self)      
+class ClientThread2(threading.Thread):
+	def _init_(self):
+		threading.Thread._init_(self)      
 
 	def run(self):
          username, host, port = dataClient()       
@@ -121,25 +141,46 @@ class clientThread2(threading.Thread):
          cliente2.listenClientData(username, host, port)
          cliente2.listenClientSong(lsTracks, numTrack, lsFileTracks)
          cliente2.listenClientAlbum(lsAlbums, numAlbum, lsTrackAlbums, numTrackAlbum, lsFileTracksA)
-         print("\nSe han compartido tus archivos locales con el servidor Secundarios de NAPSTER RPC.")          
+         print("\nSe han compartido tus archivos locales con el servidor Secundarios.") 
+         main()
+         print("\nPetición ejecutada con exito!")   
+
+# # Hilo Responsable de buscar musica en el servidor
+# class ClientThread3(threading.Thread):
+# 	def _init_(self):
+# 		threading.Thread._init_(self)      
+
+# 	def run(self):
+                      
 
 # Dependiendo el servidor a que este conectado Ejecuta los hilos 
 if clientConnected == True: 
-    clientSend = clientThread()
+    clientSend = ClientThread()
     clientSend.start()
+    # clientSearch = ClientThread3()
+    # clientSearch.start()
 elif clientConnected2 == True:
-    clientSend2 = clientThread2()
+    clientSend2 = ClientThread2()
     clientSend2.start()
+    # clientSearch = ClientThread3()
+    # clientSearch.start()
 else :
-    print("Error fatal al ejecutar servicios del cliente!") 
+    print("\nError fatal al ejecutar servicios del cliente!")
+#--------------------------------------FINAL CLIENTE-----------------------------------------------    
 
+#--------------------------------------------SERVIDOR-----------------------------------------------
+#---------------------------------------------------------------------------------------------------
 
+#conexion tipo servidor para el cliente que quiere descargar una cancion 
+serverCli = SimpleXMLRPCServer((host3, port3), requestHandler=RequestHandler, allow_none=True) 
+serverCli.register_introspection_functions()
 
+# def shareSong (song)
+#     nameSong = "" 
+#     newArtist = ""
 
-
-
-
-
+#     for nameSong in lsTotalTracks:
+#         if nameSong[0] == song:
 
 
 

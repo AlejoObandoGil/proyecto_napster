@@ -1,4 +1,4 @@
-# ---------------------FUNCIONES BUSCAR MUSICA EN CARPETA LOCAL CLIENTE---------------------------------------
+# ---------------------BUSCAR Y ENVIAR METADATOS MUSICA EN CARPETA LOCAL CLIENTE---------------------------------------
 import os
 import xmlrpc.client
 import datetime
@@ -7,11 +7,9 @@ from tinytag import TinyTag, TinyTagException
 # Esta funcion busca canciones invididuales o sin album en la carpeta local del cliente
 def sendTrack(username):
 
-    lsNameTracks = []
     lsDataTracks = []
     lsTracks = []
-    lsFileTracks = []
-    numTracks = 0
+    numTrack = 0
   
     # Este for lee el directorio raiz, sus subcarpetas y archivos. El metodo walk sirve para leer un directorio    
     for root, dirs, files, in os.walk("musica\\cliente1\\canciones1"):
@@ -19,7 +17,7 @@ def sendTrack(username):
         for name in files:
             # Si extension del archivo es tipo musica agregamos a lista
             if name.endswith((".mp3", ".mp4a", ".flac", ".alac", ".wav", ".wma", ".ogg")):
-                lsNameTracks.append(name)
+                
                 try:
                     # Creamos un objeto tinyTag por cada cancion y obtenemos sus metadatos y los guardamos en una lista
                     temp_track = TinyTag.get(root + "\\" + name)
@@ -27,16 +25,11 @@ def sendTrack(username):
                     d = str(temp_track.duration)
                     durationMinute = round(float(d), 2)
                     duration = str(datetime.timedelta(seconds=durationMinute))
-                   
-                    file = open("musica\\cliente1\\canciones1\\" + name, "rb")
-                    file_data = file.read(1024)
-                    lsFileTracks.append(file_data)
-                    file.close()
                     
                     # Creamos una lista con los metadatos de cada cancion y agregamos estas listas a otra lista para tener una matriz de canciones
-                    lsDataTracks = [temp_track.title, temp_track.artist, duration, temp_track.filesize, username]
+                    lsDataTracks = [name, temp_track.title, temp_track.artist, duration, temp_track.filesize, username]
                     lsTracks.append(lsDataTracks)
-                    numTracks += 1                   
+                    numTrack += 1                   
                     
                 except TinyTagException:
                     print("Error. No se puede leer el archivo.")
@@ -49,11 +42,11 @@ def sendTrack(username):
         # file.close()
         # print("HEcho")
                 
-    print("\nLISTA DE CANCIONES: ", lsTracks) 
-    print("\nNUMERO DE CANCIONES: ", numTracks)
-    print("\nLISTA DE NOMBRES DE CANCIONES: ", lsNameTracks)
+    # print("\nLISTA DE CANCIONES: ", lsTracks) 
+    # print("\nNUMERO DE CANCIONES: ", numTracks)
+    # print("\nLISTA DE NOMBRES DE CANCIONES: ", lsNameTracks)
 
-    return lsTracks, numTracks, lsFileTracks  
+    return lsTracks, numTrack  
 
 
 # Esta funcion busca albumes en la carptea lcoal del cliente. Los albumes estan en una carpeta diferente de las canciones individuales.
@@ -62,10 +55,8 @@ def sendAlbum(username):
     lsAlbums = []
     lsDataTracks = []
     lsTracks = []
-    lsAT = []
-    lsFileTracks = []
-    numAlbums = 0
-    numTracks = 0   
+    numAlbum = 0
+    numTrack = 0   
 
     # Con este for buscaremos en la carpeta raiz luego las subcarpetas y archivos
     # Es for hace la funcion de buscar las canciones
@@ -73,7 +64,7 @@ def sendAlbum(username):
 
         for dirName in dirs:
             lsAlbums.append(dirName)
-            numAlbums += 1
+            numAlbum += 1
             for root, dirs, files, in os.walk("musica\\cliente1\\Albums1\\" + dirName):
                 for trackName in files:                              
                     if trackName.endswith((".mp3", ".mp4a", ".flac", ".alac", ".wav", ".wma", ".ogg")):               
@@ -84,25 +75,77 @@ def sendAlbum(username):
                             durationMinute = round(float(d), 2)
                             duration = str(datetime.timedelta(seconds=durationMinute))
                             
-                            file = open("musica\\cliente1\\Albums1\\" + dirName + "\\" + trackName, "rb")
-                            file_data = file.read()
-                            lsFileTracks.append(file_data)
-                            file.close()
-
-                            lsDataTracks = [temp_track.title, temp_track.artist, dirName, duration, temp_track.filesize, username]
+                            lsDataTracks = [trackName, temp_track.title, temp_track.artist, duration, temp_track.filesize, username, dirName]
                             lsTracks.append(lsDataTracks)
-                            numTracks += 1
+                            numTrack += 1
                             
                         except TinyTagException:
-                            print("Error. No se puede leer el archivo.")               
+                            print("Error. No se puede leer el archivo.")                               
 
-    print("\nLISTA DE ALBUMS: ", lsAlbums)
-    print("\nNUMERO DE ALBUMS: ", numAlbums) 
+    return lsAlbums, numAlbum, lsTracks, numTrack
+
+# ---------------------BUSCAR Y ENVIAR ARCHIVOS DE MUSICA EN CARPETA LOCAL CLIENTE---------------------------------------
+
+# Esta funcion busca canciones invididuales o sin album en la carpeta local del cliente
+def sendTrackClient():
+
+    lsDataTracks = []
+    lsTracks = []
+  
+    # Este for lee el directorio raiz, sus subcarpetas y archivos. El metodo walk sirve para leer un directorio    
+    for root, dirs, files, in os.walk("musica\\cliente1\\canciones1"):
+
+        for name in files:
+            # Si extension del archivo es tipo musica agregamos a lista
+            if name.endswith((".mp3", ".mp4a", ".flac", ".alac", ".wav", ".wma", ".ogg")):
+
+                try:
+                    # Creamos un objeto tinyTag por cada cancion y obtenemos sus metadatos y los guardamos en una lista
+                    temp_track = TinyTag.get(root + "\\" + name)
+                   
+                    file = open("musica\\cliente1\\canciones1\\" + name, "rb")
+                    file_data = file.read(1024)
+                    file.close()
+                    
+                    # Creamos una lista con los metadatos de cada cancion y agregamos estas listas a otra lista para tener una matriz de canciones
+                    lsDataTracks = [name, temp_track.title, file_data]
+                    lsTracks.append(lsDataTracks)                   
+                    
+                except TinyTagException:
+                    print("Error. No se puede leer el archivo.")
+
+                
     print("\nLISTA DE CANCIONES: ", lsTracks) 
-    print("\nNUMERO DE CANCIONES: ", numTracks)     
- # print("\nLISTA ARCHIVOS EN ALBUM: ", lsFileTracks)              
 
-    return lsAlbums, numAlbums, lsTracks, numTracks, lsFileTracks
+    return lsTracks
 
+# Esta funcion busca albumes en la carptea lcoal del cliente. Los albumes estan en una carpeta diferente de las canciones individuales.
+def sendAlbumClient():
 
-# sendAlbum("seth")
+    lsAlbums = []
+    lsDataTracks = []
+    lsTracks = []
+
+    # Con este for buscaremos en la carpeta raiz luego las subcarpetas y archivos
+    # Es for hace la funcion de buscar las canciones
+    for root, dirs, files, in os.walk("musica\\cliente1\\Albums1"):
+
+        for dirName in dirs:
+            lsAlbums.append(dirName)
+            for root, dirs, files, in os.walk("musica\\cliente1\\Albums1\\" + dirName):
+                for trackName in files:                              
+                    if trackName.endswith((".mp3", ".mp4a", ".flac", ".alac", ".wav", ".wma", ".ogg")):               
+                        try:
+                            temp_track = TinyTag.get(root + "\\" + trackName)
+                            
+                            file = open("musica\\cliente1\\Albums1\\" + dirName + "\\" + trackName, "rb")
+                            file_data = file.read()
+                            file.close()
+
+                            lsDataTracks = [trackName, temp_track.title, file_data, dirName]
+                            lsTracks.append(lsDataTracks)
+                            
+                        except TinyTagException:
+                            print("Error. No se puede leer el archivo.")                        
+
+    return lsTracks, lsAlbums

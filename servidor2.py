@@ -75,7 +75,7 @@ def listenClientData(username, host, port):
 
     print("DATOS DEL CLIENTE: ", lsDataClient)
 
-def listenClientSong(lsTracks, numTrack, lsFileTracks):
+def listenClientSong(lsTracks, numTrack):
 
     global lsTotalTracks
     lsTotalTracks+=lsTracks
@@ -83,7 +83,7 @@ def listenClientSong(lsTracks, numTrack, lsFileTracks):
     print("\nLISTA METADATOS DE CANCIONES: ", lsTracks) 
     print("\nNUMERO DE CANCIONES: ", numTrack)
     
-def listenClientAlbum(lsAlbums, numAlbum, lsTracksAlbums, numTrackAlbum, lsFileTracksA):
+def listenClientAlbum(lsAlbums, numAlbum, lsTracksAlbums, numTrackAlbum):
     global lsTotalTracks
     lsTotalTracks+=lsTracksAlbums
 
@@ -95,19 +95,40 @@ def listenClientAlbum(lsAlbums, numAlbum, lsTracksAlbums, numTrackAlbum, lsFileT
     print("\nDatos del cliente " + user +" cargados con exito!")
     print("\n______________________________________________________________________________________________________________________\n")
     
-# Funcion para buscar una cancion
+# Funcion para buscar una cancion alojada en el servidor
 def searchTrack(song):
     newSong = ""
-# recorre la lista lsTotalTracks e itera cada cancion en track
+    newTitle = ""
+    newArtist = ""
+    # newSongAl = ""
+    newDuration = ""
+    newSize= 0
+    newUsername = ""
+    message = ""
+    newHost = ""
+    newPort = 0
+    # recorre la lista lsTotalTracks e itera cada cancion en track
     for track in lsTotalTracks:
-        if track[0] == song:
+        if track[0] == song or track[1] == song:
             newSong = track[0]
-            print("\nCancion encontrada!")
+            newTitle = track[1]
+            newArtist = track[2]
+            newDuration = track[3]
+            newSize = track[4]
+            newUsername = track[5]
+            for usern in lsTotalDataCli:
+                if usern[0] == newUsername:
+                    host = usern[1]
+                    port = usern[2]
+            message = "Cancion encontrada!"
+            print("\n" + message)
+            
     if newSong == "":
-        print("\nNombre incorrecto. La cancion no se encuentra.")   
+        message = "Nombre incorrecto. La cancion no se encuentra!"
+        print("\n" + message)   
     print(newSong)
 
-    return newSong
+    return newSong, newTitle, newArtist, newDuration, newSize, newUsername, newHost, newPort, message
 
 # ------------------------------------HILOS SERVIDOR----------------------------------------
                  
@@ -121,9 +142,9 @@ class serverThread(threading.Thread):
          server1.register_function(connectionExist)      
          server1.register_function(listenClientData)
          server1.register_function(listenClientSong)
-         server1.register_function(listenClientAlbum)
-         server1.register_function(searchTrack)
+         server1.register_function(listenClientAlbum) 
          print("Servidor Conectado...")
+         server1.handle_request()
          server1.handle_request()
          server1.handle_request()
          server1.handle_request()
@@ -133,18 +154,18 @@ class serverThread(threading.Thread):
          server2.register_function(listenClientData)
          server2.register_function(listenClientSong)
          server2.register_function(listenClientAlbum)
-         server2.register_function(searchTrack)
          print("Servidor Conectado...")
          server2.handle_request()
          server2.handle_request()
          server2.handle_request()
+         server2.handle_request()
+
          print("cerrado")
          
         #  server3.register_function(connectionExist)  
         #  server3.register_function(listenClientData)
         #  server3.register_function(listenClientSong)
         #  server3.register_function(listenClientAlbum)
-        #  server3.register_function(searchTrack)
         #  print("Servidor Conectado...")
         #  server3.handle_request()
         #  server3.handle_request()
@@ -157,13 +178,19 @@ class serverThread(threading.Thread):
          print("\nLISTA TOTAL DE CANCIONES EXISTENTES EN EL SERVIDOR: ", lsTotalTracks)
          print("\nNUMERO DE CANCIONES EXISTENTES EN EL SERVIDOR: ", len(lsTotalTracks))
 
-# Hilo Responsable de enviar copia de seguridad al servidor2
-# class serverThread2(threading.Thread):
-# 	def __init__(self):
-# 		threading.Thread.__init__(self)
+# Hilo Responsable de realizar las busquedas en los clientes (cancion, album, artista)
+class serverThread2(threading.Thread):
+	def __init__(self):
+		threading.Thread.__init__(self)
 
-# 	def run(self):
-#         # Ejecutando funciones de servidor 
+	def run(self):
+         server1.register_function(searchTrack)
+         server1.serve_forever()
+         print("consulta hecha")
+
+         server2.register_function(searchTrack)
+         server2.serve_forever()
+         print("consulta2 hecha")
 
 # clientSend = clientThread()
 # clientSend.start()   
@@ -171,7 +198,9 @@ class serverThread(threading.Thread):
 # serverReceive.start() 
 
 serverReceive = serverThread()
-serverReceive.start()          
+serverReceive.start() 
+serverQuestion = serverThread2()
+serverQuestion.start()         
     
          
 

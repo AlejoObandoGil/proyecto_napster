@@ -55,8 +55,8 @@ server2.register_introspection_functions()
 lsTotalDataCli = []
 lsTotalTracks = []
 
-print("\n*****************************BETA NAPSTER RPC*************************************")    
-print("Servidor NAPSTER Principal escuchando...")
+print("\n**********BETA NAPSTER RPC************")    
+print("\nServidor NAPSTER Principal escuchando...")
 
 def connectionExist(clientConnected):
     print("Cliente conectado: ", clientConnected)
@@ -65,7 +65,7 @@ def connectionExist(clientConnected):
 
 def listenClientData(username, host, port):
     # Datos del cliente
-    print("\n______________________________________________________________________________________________________________________\n")
+    print("\n________________________________________\n")
     print("\nCargando datos de cliente...")
     print(".....")
     # Recibimos la informacion de los clientes
@@ -80,7 +80,7 @@ def listenClientData(username, host, port):
 
     print("DATOS DEL CLIENTE: ", lsDataClient)
 
-def listenClientSong(lsTracks, numTrack, lsFileTracks):
+def listenClientSong(lsTracks, numTrack):
 
     global lsTotalTracks
     lsTotalTracks+=lsTracks
@@ -88,63 +88,102 @@ def listenClientSong(lsTracks, numTrack, lsFileTracks):
     print("\nLISTA METADATOS DE CANCIONES: ", lsTracks) 
     print("\nNUMERO DE CANCIONES: ", numTrack)
     
-def listenClientAlbum(lsAlbums, numAlbum, lsTracksAlbums, numTrackAlbum, lsFileTracksA):
+def listenClientAlbum(lsAlbums, numAlbum, lsTracksAlbums, numTrackAlbum):
     global lsTotalTracks
     lsTotalTracks+=lsTracksAlbums
 
     print("\nLISTA DE ALBUMS: ", lsAlbums)
-    print("\nNUMERO DE ALBUMS: ", numAlbums) 
+    print("\nNUMERO DE ALBUMS: ", numAlbum) 
     print("\nLISTA METADATOS DE CANCIONES EN ALBUMS: ", lsTracksAlbums) 
     print("\nNUMERO DE CANCIONES EN ALBUMS: ", numTrackAlbum)  
 
     print("\nDatos del cliente " + user +" cargados con exito!")
-    print("\n______________________________________________________________________________________________________________________\n")
+    print("\n________________________________________\n")
+
+    print("\nLISTA TOTAL DE CLIENTES EXISTENTES EN EL SERVIDOR: ", lsTotalDataCli)
+    print("\nNUMERO DE CLIENTES EXISTENTES EN EL SERVIDOR: ", len(lsTotalDataCli))
+
+    print("\nLISTA TOTAL DE CANCIONES EXISTENTES EN EL SERVIDOR: ", lsTotalTracks)
+    print("\nNUMERO DE CANCIONES EXISTENTES EN EL SERVIDOR: ", len(lsTotalTracks))
     
-# Funcion para buscar una cancion
+# Funcion para buscar una cancion alojada en el servidor
 def searchTrack(song):
     newSong = ""
-# recorre la lista lsTotalTracks e itera cada cancion en track
+    newTitle = ""
+    newArtist = ""
+    # newSongAl = ""
+    newDuration = ""
+    newSize= 0
+    newUsername = ""
+    message = ""
+    newHost = ""
+    newPort = 0
+    # recorre la lista lsTotalTracks e itera cada cancion en track
     for track in lsTotalTracks:
-        if track[0] == song:
+        if track[0] == song or track[1] == song:
             newSong = track[0]
-            print("\nCancion encontrada!")
+            newTitle = track[1]
+            newArtist = track[2]
+            newDuration = track[3]
+            newSize = track[4]
+            newUsername = track[5]
+            for usern in lsTotalDataCli:
+                if usern[0] == newUsername:
+                    newHost = usern[1]
+                    newPort = usern[2]
+            message = "Cancion encontrada!"
+            print("\n" + message)
+            
     if newSong == "":
-        print("\nNombre incorrecto. La cancion no se encuentra.")   
+        message = "Nombre incorrecto. La cancion no se encuentra!"
+        print("\n" + message)   
     print(newSong)
 
-    return newSong
+    return newSong, newTitle, newArtist, newDuration, newSize, newUsername, newHost, newPort, message
 
 # ------------------------------------HILOS SERVIDOR----------------------------------------
                  
 # Hilo Responsable de recibir infomacion de los clientes
-class serverThread(threading.Thread):
-	def __init__(self):
-		threading.Thread.__init__(self)
+class ServerThread(threading.Thread):
+	def _init_(self):
+		threading.Thread._init_(self)
 
 	def run(self):
         # Ejecutando funciones de servidor  
-               
+         server1.register_function(connectionExist)      
          server1.register_function(listenClientData)
          server1.register_function(listenClientSong)
          server1.register_function(listenClientAlbum)
+        #  server1.handle_request()
+
          server1.register_function(searchTrack)
-         print("Servidor Conectado...")
-         server1.handle_request()
-         server1.handle_request()
-         server1.handle_request()
-         print("cerrado")
-             
+         server1.serve_forever()
+         
+        
+# Hilo Responsable del buscador de musica y enviar datos de musica encontrada
+class ServerThread2(threading.Thread):
+	def _init_(self):
+		threading.Thread._init_(self)
+
+	def run(self):
+        
+         server2.register_function(connectionExist)    
          server2.register_function(listenClientData)
          server2.register_function(listenClientSong)
          server2.register_function(listenClientAlbum)
-         server2.register_function(searchTrack)
          print("Servidor Conectado...")
-         server2.handle_request()
-         server2.handle_request()
-         server2.handle_request()
-         print("cerrado")
+        #  server2.handle_request()
 
-        #  server3.register_function(listenClientData)
+         server2.register_function(searchTrack)
+         print("Esperando Peticion del cliente...")
+         server2.serve_forever()
+        
+# class ServerThread2(threading.Thread):
+# 	def _init_(self):
+# 		threading.Thread._init_(self)
+
+# 	def run(self):         
+        # server3.register_function(listenClientData)
         #  server3.register_function(listenClientSong)
         #  server3.register_function(listenClientAlbum)
         #  server3.register_function(searchTrack)
@@ -154,28 +193,9 @@ class serverThread(threading.Thread):
         #  server3.handle_request()
         #  print("cerrado")
 
-         print("\nLISTA TOTAL DE CLIENTES EXISTENTES EN EL SERVIDOR: ", lsTotalDataCli)
-         print("\nNUMERO DE CLIENTES EXISTENTES EN EL SERVIDOR: ", len(lsTotalDataCli))
-
-         print("\nLISTA TOTAL DE CANCIONES EXISTENTES EN EL SERVIDOR: ", lsTotalTracks)
-         print("\nNUMERO DE CANCIONES EXISTENTES EN EL SERVIDOR: ", len(lsTotalTracks))
-
-# Hilo Responsable de enviar copia de seguridad al servidor2
-# class serverThread2(threading.Thread):
-# 	def __init__(self):
-# 		threading.Thread.__init__(self)
-
-# 	def run(self):
-#         # Ejecutando funciones de servidor 
-
-# clientSend = clientThread()
-# clientSend.start()   
-# serverReceive = serverThread()
-# serverReceive.start() 
-
-serverReceive = serverThread()
-serverReceive.start()          
-    
-         
+serverReceive1 = ServerThread()
+serverReceive1.start()  
+serverReceive2 = ServerThread2()
+serverReceive2.start()    
 
 

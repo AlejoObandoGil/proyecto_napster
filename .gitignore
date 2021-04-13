@@ -1,6 +1,7 @@
 env/
 musica/
 __pycache__
+
 get-pip.py
 clientTest.py
 severTest.py

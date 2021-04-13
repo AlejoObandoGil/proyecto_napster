@@ -62,4 +62,7 @@ enviar archivos RPC
 [2] https://stackoverflow.com/questions/9099174/send-file-from-client-to-server-using-xmlrpc
 
 leer archivos
-[3]https://j2logo.com/python/listar-directorio-en-python/#listar-listdir
+[3] https://j2logo.com/python/listar-directorio-en-python/#listar-listdir
+
+Object XMLRPC - Binary file
+[4] https://docs.python.org/3/library/xmlrpc.client.html#binary-objects

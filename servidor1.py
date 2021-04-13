@@ -65,7 +65,7 @@ def connectionExist(clientConnected):
 
 def listenClientData(username, host, port):
     # Datos del cliente
-    print("\n________________________________________\n")
+    print("\n__________________________________________________________________________________________________\n")
     print("\nCargando datos de cliente...")
     print(".....")
     # Recibimos la informacion de los clientes
@@ -98,7 +98,7 @@ def listenClientAlbum(lsAlbums, numAlbum, lsTracksAlbums, numTrackAlbum):
     print("\nNUMERO DE CANCIONES EN ALBUMS: ", numTrackAlbum)  
 
     print("\nDatos del cliente " + user +" cargados con exito!")
-    print("\n________________________________________\n")
+    print("\n__________________________________________________________________________________________________\n")
 
     print("\nLISTA TOTAL DE CLIENTES EXISTENTES EN EL SERVIDOR: ", lsTotalDataCli)
     print("\nNUMERO DE CLIENTES EXISTENTES EN EL SERVIDOR: ", len(lsTotalDataCli))
@@ -131,11 +131,11 @@ def searchTrack(song):
                 if usern[0] == newUsername:
                     newHost = usern[1]
                     newPort = usern[2]
-            message = "Cancion encontrada!"
+            message = "\nCancion encontrada!"
             print("\n" + message)
             
     if newSong == "":
-        message = "Nombre incorrecto. La cancion no se encuentra!"
+        message = "\nNombre incorrecto. La cancion no se encuentra!"
         print("\n" + message)   
     print(newSong)
 

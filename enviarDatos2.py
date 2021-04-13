@@ -1,6 +1,5 @@
 # ---------------------FUNCIONES BUSCAR MUSICA EN CARPETA LOCAL CLIENTE---------------------------------------
 import os
-import xmlrpc.client
 import datetime
 from tinytag import TinyTag, TinyTagException
 
@@ -83,7 +82,7 @@ def sendAlbum(username):
 # ---------------------BUSCAR Y ENVIAR ARCHIVOS DE MUSICA EN CARPETA LOCAL CLIENTE---------------------------------------
 
 # Esta funcion busca canciones invididuales o sin album en la carpeta local del cliente
-def sendTrackClient(username):
+def sendTrackClient():
 
     lsDataTracks = []
     lsTracks = [] 
@@ -99,7 +98,7 @@ def sendTrackClient(username):
                     temp_track = TinyTag.get(root + "\\" + name)
                     try:
                         file = open("musica\\cliente2\\canciones2\\" + name, "rb")
-                        file_data = file.read(1024)
+                        file_data = file.read()
                     except:
                         print("Error al leer archivo")
                     file.close()
@@ -115,7 +114,7 @@ def sendTrackClient(username):
     return lsTracks
 
 # Esta funcion busca albumes en la carptea lcoal del cliente. Los albumes estan en una carpeta diferente de las canciones individuales.
-def sendAlbumClient(username):
+def sendAlbumClient():
 
     lsAlbums = []
     lsDataTracks = []
@@ -134,7 +133,7 @@ def sendAlbumClient(username):
                             
                             try:
                                 file = open("musica\\cliente2\\canciones2\\" + name, "rb")
-                                file_data = file.read(1024)
+                                file_data = file.read()
                             except:
                                 print("Error al leer archivo")
                             file.close()

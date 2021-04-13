@@ -3,7 +3,7 @@ from xmlrpc.server import SimpleXMLRPCRequestHandler
 import xmlrpc.client
 import threading
 import os
-from enviarDatos1 import sendTrack, sendAlbum
+from enviarDatos1 import sendTrack, sendAlbum, sendTrackClient, sendAlbumClient
 # Python 3.7
 # Cliente RPC
 # ----------------------------------------------------CLIENTE--------------------------------------------------------------
@@ -90,39 +90,45 @@ def main():
         print(" 2. Buscar por artista")
         print(" 3. Buscar por álbum") 
         print(" 0. Salir") 
-        opcion = (input("Escribe el número de la opción para buscar: "))
+        opcion = input("Escribe el número de la opción para buscar: ")
 
         if opcion == "1":            
             song = input("Escribe el nombre de una cancion: ")
             songServer, titleServer, artistServer, durationServer, sizeServer, userServer, hostServer, portServer, message = cliente1.searchTrack(song)
             print(message)
-            print ("\n- Nombre cancion:",songServer,"- Titulo:", titleServer, "- artista:",artistServer,  "- duracion:",durationServer, "- tamaño:",sizeServer, "- usuario:",userServer)
-            print ("host usuario:",hostServer, "port usuario:",portServer)
 
-            clienteCliente = xmlrpc.client.ServerProxy('http://' + hostServer + ':' + str(portServer), allow_none=True)
-            print("\nCliente conectando a servidor Principal...")
+            if durationServer == "":
+                song = input("Escribe el nombre de una cancion: ")
+                
+            else:               
+                print ("\n- Nombre cancion:",songServer,"- Titulo:", titleServer, "- artista:",artistServer,  "- duracion:",durationServer, "- tamaño:",sizeServer, "- usuario:",userServer)
+                print ("host usuario:",hostServer, "port usuario:",portServer)
 
-            file = clienteCliente.shareSong(song)
-            print("Archivo listo")
-            while True:
-                print("\nMENU DE DESCARGA NAPSTER")
-                print(" 1. Descargar canción")
-                print(" 0. <- Atras")
-                opcion2 = (input("Escribe el número de la opción: "))
+                clienteCliente = xmlrpc.client.ServerProxy('http://' + hostServer + ':' + str(portServer), allow_none=True)
+                print("\nCliente local conectando a cliente" + username)
 
-                if opcion == "1":
-                    print("\nDescargando cancion...")
-                    dir = "musica\\cliente1\\descargas\\" + song + ".mp3"
-                    try:
-                        download = open("musica\\cliente1\\descargas\\" + song + ".mp3", "wb")
-                        download.write(file)
+                file = clienteCliente.shareSong(song)
+                print("Archivo listo")
+                #print(file)
+                while True:
+                    print("\nMENU DE DESCARGA NAPSTER")
+                    print(" 1. Descargar canción")
+                    print(" 0. <- Atras")
+                    opcion2 = input("Escribe el número de la opción: ")
+
+                    if opcion == "1":
+                        print("\nDescargando cancion...")
+                        dir = "musica\\cliente1\\descargas\\" + song + ".mp3"
+                        try:
+                            download = open("musica\\cliente1\\descargas\\" + song + ".mp3", "wb")
+                            download.write(file.data)
+                        except:
+                            print("Error al descargar cancion.")
+
                         download.close()
-                    except:
-                        print("Error al descargar cancion.")
-
-                    print("\nCancion descargada con exito!")
-                elif opcion == "0":
-                    pass
+                        print("\nCancion descargada con exito!\nLa ubicacion del archivo es: ", dir)
+                    elif opcion == "0":
+                        break
 
         elif opcion == "2":
             song = input("Escribe el nombre de un artista: ")
@@ -192,7 +198,7 @@ else :
 serverCli = SimpleXMLRPCServer((host3, port3), requestHandler=RequestHandler, allow_none=True) 
 serverCli.register_introspection_functions()
 
-def shareSong (nameFile):
+def shareSong(nameFile):
     file = ""
     lsTracks = sendTrackClient()
     for track in lsTracks:
@@ -203,19 +209,22 @@ def shareSong (nameFile):
     if file == "":
         print("\nEl archivo no fue encontrado")
 
-    return file
+    return file # xmlrpc.client.Binary(file)
 
 #--------------------------------------------------HILOS----------------------------------------------------------
 
 # Hilo Servidor que atiende a otros clientes
-class ClientServer(threading.Thread):
+class ClientServerThread(threading.Thread):
 	def _init_(self):
 		threading.Thread._init_(self)      
 
 	def run(self): 
-        serverCli.register_function(shareSong(song))  
+         serverCli.register_function(shareSong)  
 
-        serverCli.serve_forever()
+         serverCli.serve_forever()
+
+clientServer = ClientServerThread()
+clientServer.start()         
 
 #----------------------------------------------FINAL SERVIDOR-----------------------------------------------      
 

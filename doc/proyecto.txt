@@ -20,6 +20,7 @@ EN PROCESO
 
 5. El servidor envía al cliente la dirección y puerto de todos los clientes que poseen
 el álbum o la canción solicitada.
+LISTO
 
 6. El cliente se conecta de manera directa a todos y cada uno de los clientes de manera
 simultánea, y debe descargar la información solicitada de todos ellos. Es decir, cada
@@ -27,6 +28,7 @@ uno debe enviar una parte para tener el total de la información en el cliente.(
 
 7. Una vez descargada la información, el cliente solicitante debe reproducir la canción
 o una de las canciones que se descargó en caso de que sea un álbum.
+LISTO
 
 8. Para el intercambio de información y datos entre las partes involucradas se debe
 usar JSON.

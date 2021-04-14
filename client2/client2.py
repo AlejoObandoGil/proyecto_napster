@@ -4,6 +4,7 @@ import xmlrpc.client
 import threading
 import os
 from sendAudioData2 import sendTrack, sendAlbum, sendTrackClient, sendAlbumClient
+from menu2 import menu
 # Python 3.7
 # Cliente RPC
 
@@ -79,64 +80,6 @@ def dataClient():
         print("La Direccion de ", username, "para conectarse a otros clientes es: ", host3, " y el puerto es: ", port3)
         return username, host3, port3       
 
-def main():
-   
-    while True:
-        print("\nMENU PRINCIPAL DE NAPSTER")
-        print(" 1. Buscar por canción")
-        print(" 2. Buscar por artista")
-        print(" 3. Buscar por álbum") 
-        print(" 0. Salir") 
-        opcion = input("Escribe el número de la opción para buscar: ")
-
-        if opcion == "1":            
-            song = input("Escribe el nombre de una cancion: ")
-            songServer, titleServer, artistServer, durationServer, sizeServer, userServer, hostServer, portServer, message = cliente1.searchTrack(song)
-            print(message)
-
-            if durationServer == "":
-                song = input("Escribe el nombre de una cancion: ")
-                
-            else:               
-                print ("\n- Nombre cancion:",songServer,"- Titulo:", titleServer, "- artista:",artistServer,  "- duracion:",durationServer, "- tamaño:",sizeServer, "- usuario:",userServer)
-                print ("host usuario:",hostServer, "port usuario:",portServer)
-
-                clienteCliente = xmlrpc.client.ServerProxy('http://' + hostServer + ':' + str(portServer), allow_none=True)
-                print("\nCliente local conectando a cliente" + username)
-
-                file = clienteCliente.shareSong(song)
-                print("Archivo listo")
-                # print(file)
-                while True:
-                    print("\nMENU DE DESCARGA NAPSTER")
-                    print(" 1. Descargar canción")
-                    print(" 0. <- Atras")
-                    opcion2 = input("Escribe el número de la opción: ")
-
-                    if opcion == "1":
-                        print("\nDescargando cancion...")
-                        dir = "musica\\cliente1\\descargas\\" + song + ".mp3"
-                        try:
-                            download = open("musica\\cliente1\\descargas\\" + song + ".mp3", "wb")
-                            download.write(file.data)
-                        except:
-                            print("Error al descargar cancion.")
-
-                        download.close()
-                        print("\nCancion descargada con exito!\nLa ubicacion del archivo es: ", dir)
-                    elif opcion == "0":
-                        break
-            
-        elif opcion == "2":
-            song = input("Escribe el nombre de un artista: ")
-                    
-        elif opcion == "3":
-            song = input("Escribe el nombre de un album: ")
-
-        elif opcion == "0":
-            print("\nCerrando cliente NAPSTER...")   
-            break
-    return song
 # --------------------------------------------EJECUCION E HILOS------------------------------------------------------
 
 # Hilo Responsable de enviar informacion al servidor1
@@ -153,7 +96,7 @@ class ClientThread(threading.Thread):
          cliente1.listenClientSong(lsTracks, numTrack)
          cliente1.listenClientAlbum(lsAlbums, numAlbum, lsTrackAlbums, numTrackAlbum)
          print("\nSe han compartido tus archivos locales con el servidor Principal.")
-         main()
+         menu(cliente1)
          print("\nPetición ejecutada con exito!")   
 
 # Hilo Responsable de enviar informacion al servidor2
@@ -170,7 +113,7 @@ class ClientThread2(threading.Thread):
          cliente2.listenClientSong(lsTracks, numTrack, lsFileTracks)
          cliente2.listenClientAlbum(lsAlbums, numAlbum, lsTrackAlbums, numTrackAlbum, lsFileTracksA)
          print("\nSe han compartido tus archivos locales con el servidor Secundarios.") 
-         main()
+         menu(cliente2)
          print("\nPetición ejecutada con exito!")   
 
 # Dependiendo el servidor a que este conectado Ejecuta los hilos 
@@ -195,18 +138,24 @@ else :
 serverCli = SimpleXMLRPCServer((host3, port3), requestHandler=RequestHandler, allow_none=True) 
 serverCli.register_introspection_functions()
 
-def shareSong (nameFile):
+def shareSong(nameFile):
     file = ""
     lsTracks = sendTrackClient()
+    lsTrackAlbums, lsAlbums = sendAlbumClient()
     for track in lsTracks:
         if track[0] == nameFile or track[1] == nameFile:
             file = track[2]
-            print("Archivo listo")
+            print("\nArchivo listo para enviar!")
+
+    for track in lsTrackAlbums:
+        if track[0] == nameFile or track[1] == nameFile:
+            file = track[2]
+            print("\nArchivo listo para enviar!")        
 
     if file == "":
-        print("\nEl archivo no fue encontrado")
+        print("\nError. El archivo no fue encontrado!")
 
-    return file
+    return file # xmlrpc.client.Binary(file)
 
 #--------------------------------------------------HILOS----------------------------------------------------------
 

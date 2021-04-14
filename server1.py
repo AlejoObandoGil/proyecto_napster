@@ -65,7 +65,7 @@ def connectionExist(clientConnected):
 
 def listenClientData(username, host, port):
     # Datos del cliente
-    print("\n__________________________________________________________________________________________________\n")
+    print("\n_____________________________________________________________________________________________________________________________________________________\n")
     print("\nCargando datos de cliente...")
     print(".....")
     # Recibimos la informacion de los clientes
@@ -98,7 +98,7 @@ def listenClientAlbum(lsAlbums, numAlbum, lsTracksAlbums, numTrackAlbum):
     print("\nNUMERO DE CANCIONES EN ALBUMS: ", numTrackAlbum)  
 
     print("\nDatos del cliente " + user +" cargados con exito!")
-    print("\n__________________________________________________________________________________________________\n")
+    print("\n_____________________________________________________________________________________________________________________________________________________\n")
 
     print("\nLISTA TOTAL DE CLIENTES EXISTENTES EN EL SERVIDOR: ", lsTotalDataCli)
     print("\nNUMERO DE CLIENTES EXISTENTES EN EL SERVIDOR: ", len(lsTotalDataCli))
@@ -108,38 +108,44 @@ def listenClientAlbum(lsAlbums, numAlbum, lsTracksAlbums, numTrackAlbum):
     
 # Funcion para buscar una cancion alojada en el servidor
 def searchTrack(song):
-    newSong = ""
-    newTitle = ""
-    newArtist = ""
-    # newSongAl = ""
-    newDuration = ""
-    newSize= 0
-    newUsername = ""
-    message = ""
-    newHost = ""
-    newPort = 0
+    newSong = []
+    lsNewSong = []
+    newDir = []
+    lsNewDir = []
+
+    # newTitle = ""
+    # newArtist = ""
+    # newDuration = ""
+    # newSize= 0
+    # newUsername = ""
+    # message = ""
+    # newHost = ""
+    # newPort = 0
     # recorre la lista lsTotalTracks e itera cada cancion en track
     for track in lsTotalTracks:
         if track[0] == song or track[1] == song:
-            newSong = track[0]
-            newTitle = track[1]
-            newArtist = track[2]
-            newDuration = track[3]
-            newSize = track[4]
-            newUsername = track[5]
+            newSong = [track[0], track[1], track[2], track[3], track[4], track[5]]
+            # newSong = 
+            # newTitle = 
+            # newArtist = 
+            # newDuration = 
+            # newSize = 
+            # newUsername = 
+            lsNewSong.append(newSong)
             for usern in lsTotalDataCli:
-                if usern[0] == newUsername:
-                    newHost = usern[1]
-                    newPort = usern[2]
-            message = "\nCancion encontrada!"
+                if usern[0] == newSong[5]:
+                    # newDir = [usern[0], usern[1], usern[2]]
+                    lsNewDir.append(usern)
+            message = "Cancion encontrada!"
+            
             print("\n" + message)
             
-    if newSong == "":
-        message = "\nNombre incorrecto. La cancion no se encuentra!"
-        print("\n" + message)   
-    print(newSong)
+    if len(lsNewSong) == 0:
+        message = "Nombre incorrecto. La cancion no se encuentra!"
+        print("\n" + message)
 
-    return newSong, newTitle, newArtist, newDuration, newSize, newUsername, newHost, newPort, message
+    print(lsNewSong)
+    return lsNewSong, lsNewDir, message
 
 # ------------------------------------HILOS SERVIDOR----------------------------------------
                  

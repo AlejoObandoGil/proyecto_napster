@@ -132,11 +132,12 @@ def sendAlbumClient():
                             temp_track = TinyTag.get(root + "\\" + trackName)
                             
                             try:
-                                file = open("musica\\cliente2\\canciones2\\" + name, "rb")
+                                file = open("musica\\cliente1\\Albums1\\" + dirName + "\\" + trackName, "rb")
                                 file_data = file.read()
+                                file.close()
                             except:
                                 print("Error al leer archivo")
-                            file.close()
+                            
 
                             lsDataTracks = [trackName, temp_track.title, file_data, dirName]
                             lsTracks.append(lsDataTracks)

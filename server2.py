@@ -50,8 +50,8 @@ server2.register_introspection_functions()
 lsTotalDataCli = []
 lsTotalTracks = []
 
-print("\n*****************************BETA NAPSTER RPC*************************************")    
-print("Servidor NAPSTER Secundario escuchando...")
+print("\n**********BETA NAPSTER RPC************")    
+print("\nServidor NAPSTER Principal escuchando...")
 
 def connectionExist(clientConnected):
     print("Cliente conectado: ", clientConnected)
@@ -60,7 +60,7 @@ def connectionExist(clientConnected):
 
 def listenClientData(username, host, port):
     # Datos del cliente
-    print("\n______________________________________________________________________________________________________________________\n")
+    print("\n_____________________________________________________________________________________________________________________________________________________\n")
     print("\nCargando datos de cliente...")
     print(".....")
     # Recibimos la informacion de los clientes
@@ -93,7 +93,13 @@ def listenClientAlbum(lsAlbums, numAlbum, lsTracksAlbums, numTrackAlbum):
     print("\nNUMERO DE CANCIONES EN ALBUMS: ", numTrackAlbum)  
 
     print("\nDatos del cliente " + user +" cargados con exito!")
-    print("\n______________________________________________________________________________________________________________________\n")
+    print("\n_____________________________________________________________________________________________________________________________________________________\n")
+
+    print("\nLISTA TOTAL DE CLIENTES EXISTENTES EN EL SERVIDOR: ", lsTotalDataCli)
+    print("\nNUMERO DE CLIENTES EXISTENTES EN EL SERVIDOR: ", len(lsTotalDataCli))
+
+    print("\nLISTA TOTAL DE CANCIONES EXISTENTES EN EL SERVIDOR: ", lsTotalTracks)
+    print("\nNUMERO DE CANCIONES EXISTENTES EN EL SERVIDOR: ", len(lsTotalTracks))
     
 # Funcion para buscar una cancion alojada en el servidor
 def searchTrack(song):
@@ -118,8 +124,8 @@ def searchTrack(song):
             newUsername = track[5]
             for usern in lsTotalDataCli:
                 if usern[0] == newUsername:
-                    host = usern[1]
-                    port = usern[2]
+                    newHost = usern[1]
+                    newPort = usern[2]
             message = "Cancion encontrada!"
             print("\n" + message)
             
@@ -133,74 +139,64 @@ def searchTrack(song):
 # ------------------------------------HILOS SERVIDOR----------------------------------------
                  
 # Hilo Responsable de recibir infomacion de los clientes
-class serverThread(threading.Thread):
-	def __init__(self):
-		threading.Thread.__init__(self)
+class ServerThread(threading.Thread):
+	def _init_(self):
+		threading.Thread._init_(self)
 
 	def run(self):
         # Ejecutando funciones de servidor  
          server1.register_function(connectionExist)      
          server1.register_function(listenClientData)
          server1.register_function(listenClientSong)
-         server1.register_function(listenClientAlbum) 
-         print("Servidor Conectado...")
-         server1.handle_request()
-         server1.handle_request()
-         server1.handle_request()
-         server1.handle_request()
-         print("cerrado")
+         server1.register_function(listenClientAlbum)
+        #  server1.handle_request()
 
-         server2.register_function(connectionExist)      
+         server1.register_function(searchTrack)
+         server1.serve_forever()
+         
+# Hilo Responsable de recibir infomacion de los clientes
+class ServerThread2(threading.Thread):
+	def _init_(self):
+		threading.Thread._init_(self)
+
+	def run(self):
+        
+         server2.register_function(connectionExist)    
          server2.register_function(listenClientData)
          server2.register_function(listenClientSong)
          server2.register_function(listenClientAlbum)
          print("Servidor Conectado...")
-         server2.handle_request()
-         server2.handle_request()
-         server2.handle_request()
-         server2.handle_request()
+        #  server2.handle_request()
 
-         print("cerrado")
-         
-        #  server3.register_function(connectionExist)  
-        #  server3.register_function(listenClientData)
+         server2.register_function(searchTrack)
+         print("Esperando Peticion del cliente...")
+         server2.serve_forever()
+        
+# class ServerThread2(threading.Thread):
+# 	def _init_(self):
+# 		threading.Thread._init_(self)
+
+# 	def run(self):         
+        # server3.register_function(listenClientData)
         #  server3.register_function(listenClientSong)
         #  server3.register_function(listenClientAlbum)
+        #  server3.register_function(searchTrack)
         #  print("Servidor Conectado...")
         #  server3.handle_request()
         #  server3.handle_request()
         #  server3.handle_request()
         #  print("cerrado")
 
-         print("\nLISTA TOTAL DE CLIENTES EXISTENTES EN EL SERVIDOR: ", lsTotalDataCli)
-         print("\nNUMERO DE CLIENTES EXISTENTES EN EL SERVIDOR: ", len(lsTotalDataCli))
+serverReceive1 = ServerThread()
+serverReceive1.start()  
+serverReceive2 = ServerThread2()
+serverReceive2.start()    
 
-         print("\nLISTA TOTAL DE CANCIONES EXISTENTES EN EL SERVIDOR: ", lsTotalTracks)
-         print("\nNUMERO DE CANCIONES EXISTENTES EN EL SERVIDOR: ", len(lsTotalTracks))
 
-# Hilo Responsable de realizar las busquedas en los clientes (cancion, album, artista)
-class serverThread2(threading.Thread):
-	def __init__(self):
-		threading.Thread.__init__(self)
 
-	def run(self):
-         server1.register_function(searchTrack)
-         server1.serve_forever()
-         print("consulta hecha")
 
-         server2.register_function(searchTrack)
-         server2.serve_forever()
-         print("consulta2 hecha")
 
-# clientSend = clientThread()
-# clientSend.start()   
-# serverReceive = serverThread()
-# serverReceive.start() 
-
-serverReceive = serverThread()
-serverReceive.start() 
-serverQuestion = serverThread2()
-serverQuestion.start()         
+      
     
          
 

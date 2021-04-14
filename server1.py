@@ -107,42 +107,37 @@ def listenClientAlbum(lsAlbums, numAlbum, lsTracksAlbums, numTrackAlbum):
     print("\nNUMERO DE CANCIONES EXISTENTES EN EL SERVIDOR: ", len(lsTotalTracks))
     
 # Funcion para buscar una cancion alojada en el servidor
-def searchTrack(song):
+def searchTrack(search, op):
     newSong = []
     lsNewSong = []
-    newDir = []
     lsNewDir = []
-
-    # newTitle = ""
-    # newArtist = ""
-    # newDuration = ""
-    # newSize= 0
-    # newUsername = ""
-    # message = ""
-    # newHost = ""
-    # newPort = 0
-    # recorre la lista lsTotalTracks e itera cada cancion en track
+    # Recorre la lista lsTotalTracks e itera cada cancion en track
     for track in lsTotalTracks:
-        if track[0] == song or track[1] == song:
+        # Se busca la cancion por los dos primeros posiciones de la lista
+        # nombre del archivo y titulo del archivo
+        if track[0] == search or track[op] == search:
             newSong = [track[0], track[1], track[2], track[3], track[4], track[5]]
-            # newSong = 
-            # newTitle = 
-            # newArtist = 
-            # newDuration = 
-            # newSize = 
-            # newUsername = 
+            # S la cancion se encuentra gardamos todos sus datos en una lista y guardamos en una lista de listas
             lsNewSong.append(newSong)
+            # Ahora comparamos los usuarios para conocer su puerto y direccion
             for usern in lsTotalDataCli:
                 if usern[0] == newSong[5]:
-                    # newDir = [usern[0], usern[1], usern[2]]
+                    # Guardamos en una lisat de listas
                     lsNewDir.append(usern)
-            message = "Cancion encontrada!"
-            
-            print("\n" + message)
-            
-    if len(lsNewSong) == 0:
+            if op == 1:
+                message = "Cancion encontrada!"           
+                print("\n" + message)
+            else:
+                message = "Artista encontrado!"           
+                print("\n" + message)
+
+    # Si la lista esta vacia no encontro ninguna cancion        
+    if len(lsNewSong) == 0 and op == 1:
         message = "Nombre incorrecto. La cancion no se encuentra!"
         print("\n" + message)
+    elif  len(lsNewSong) == 0 and op == 2:
+        message = "Nombre incorrecto. El artista no se encuentra!"
+        print("\n" + message)   
 
     print(lsNewSong)
     return lsNewSong, lsNewDir, message
@@ -181,6 +176,7 @@ class ServerThread2(threading.Thread):
         #  server2.handle_request()
 
          server2.register_function(searchTrack)
+
          print("Esperando Peticion del cliente...")
          server2.serve_forever()
         

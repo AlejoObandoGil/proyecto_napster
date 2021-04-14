@@ -96,7 +96,7 @@ class ClientThread(threading.Thread):
          cliente1.listenClientSong(lsTracks, numTrack)
          cliente1.listenClientAlbum(lsAlbums, numAlbum, lsTrackAlbums, numTrackAlbum)
          print("\nSe han compartido tus archivos locales con el servidor Principal.")
-         menu(cliente1)
+         menu(cliente1, username)
          print("\nPetición ejecutada con exito!")   
 
 # Hilo Responsable de enviar informacion al servidor2
@@ -113,7 +113,7 @@ class ClientThread2(threading.Thread):
          cliente2.listenClientSong(lsTracks, numTrack, lsFileTracks)
          cliente2.listenClientAlbum(lsAlbums, numAlbum, lsTrackAlbums, numTrackAlbum, lsFileTracksA)
          print("\nSe han compartido tus archivos locales con el servidor Secundarios.") 
-         menu(cliente2)
+         menu(cliente2, username)
          print("\nPetición ejecutada con exito!")   
 
 # Dependiendo el servidor a que este conectado Ejecuta los hilos 
@@ -138,18 +138,18 @@ else :
 serverCli = SimpleXMLRPCServer((host3, port3), requestHandler=RequestHandler, allow_none=True) 
 serverCli.register_introspection_functions()
 
-def shareSong(nameFile):
+def shareSong(nameFile, op):
     file = ""
     lsTracks = sendTrackClient()
     lsTrackAlbums, lsAlbums = sendAlbumClient()
     for track in lsTracks:
-        if track[0] == nameFile or track[1] == nameFile:
-            file = track[2]
+        if track[0] == nameFile or track[op] == nameFile:
+            file = track[3]
             print("\nArchivo listo para enviar!")
 
     for track in lsTrackAlbums:
-        if track[0] == nameFile or track[1] == nameFile:
-            file = track[2]
+        if track[0] == nameFile or track[op] == nameFile:
+            file = track[3]
             print("\nArchivo listo para enviar!")        
 
     if file == "":

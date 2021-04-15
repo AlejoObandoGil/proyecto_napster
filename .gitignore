@@ -1,7 +1,10 @@
 __pycache__
+__pycache__/
 __pycache__/json.cpython-37
+json.cpython-37
 .vscode
 .vscode/tasks.json
+tasks.json
 env/
 musica/
 get-pip.py

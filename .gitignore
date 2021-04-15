@@ -1,4 +1,6 @@
 __pycache__
+__pycache__/
+.vscode/
 env/
 musica/
 get-pip.py

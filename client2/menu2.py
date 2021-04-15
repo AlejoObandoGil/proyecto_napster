@@ -1,22 +1,31 @@
+import os
+import sys
+import json
+import xmlrpc.client
 from xmlrpc.server import SimpleXMLRPCServer
 from xmlrpc.server import SimpleXMLRPCRequestHandler
-import xmlrpc.client
-import os
+
 from musicPlayer2 import playMusic
 
 def downloadMenu(client, username, op, song):
 
-    opcion = int(op)
+    option = int(op)
     global download
     download = 0
+
+    json_song = json.dumps(song)
+    json_option = json.dumps(option)
+
     # Instancia de la funcion buscar del servidor y guardamos datos de la cancion y usuario en cliente   
-    lsNewSong, lsNewDir, message = client.searchTrack(song, opcion)
+    json_lsNewSong, json_lsNewDir, json_message = client.searchTrack(json_song, json_option)
+
+    lsNewSong = json.loads(json_lsNewSong)
+    lsNewDir = json.loads(json_lsNewDir)
+    message = json.loads(json_message)
+
     print("\n", message)
 
-    if message  != "Cancion encontrada!" or message != "Artista encontrado":
-        pass
-        
-    else:     
+    if message == "Cancion encontrada!" or message == "Artista encontrado!":
         print("\n_______________________________________________________________________________________________________________________________________________________")            
         # Segundo menu de descarga
         while True:
@@ -37,9 +46,9 @@ def downloadMenu(client, username, op, song):
             print("\n 1. Descargar canción")
             print(" 2. Reproducir canción")
             print(" 0. Volver a Menu principal")
-            opcion2 = input("Opción >>> ")
+            option2 = input("Opción >>> ")
 
-            if opcion2 == "1":
+            if option2 == "1":
                 if userServer == username:
                     print("Estas intentando descargar una canción que ya tienes.\n Deseas descargarla? 1. Si / 2. No :")
                 else:    
@@ -53,7 +62,8 @@ def downloadMenu(client, username, op, song):
                     print("\nDescargando canción... Por favor espere...")
                     try:
                         # Llamamos la funcion que busca el archivo en la carpeta del cliente de donde se descargara
-                        file_data = clienteCliente.shareSong(song, opcion)
+                        file_data = clienteCliente.shareSong(json_song, json_option)
+                        # file_data = json.loads(json_file_data)
                         # Guardamos la cancion en el directorio
                         dirDownload = "musica\\cliente2\\descargas\\" + song + ".mp3"                       
                         file = open(dirDownload, "wb")
@@ -66,24 +76,26 @@ def downloadMenu(client, username, op, song):
                         print("\nError al descargar canción. Presiona 1 para volver a intentarlo.")
                         download = 0                                              
                 
-            elif opcion2 == "2":
+            elif option2 == "2":
                 # llamamos la funcion reproductor de musica
                 if download == 1:
                     playMusic(song)
                 else:
                     print("\nLa canción # ", song, " # no esta descargada.\n" )    
                 
-            elif opcion2 == "0":
+            elif option2 == "0":
                 break
 
             else:
                 print("Digite una opción válida!")
 
-            print("\n_______________________________________________________________________________________________________________________________________________________")      
-
+            print("\n_______________________________________________________________________________________________________________________________________________________")             
+    else: 
+        pass   
+        
 
 def menu(client, username):
-    # Primer menu es el menu principal 
+    # Primer menu: es el menu principal 
     while True:
         print("\n_______________________________________________________________________________________________________________________________________________________")      
         print("\nMENU PRINCIPAL DE NAPSTER")
@@ -91,24 +103,32 @@ def menu(client, username):
         print(" 2. Buscar por artista")
         print(" 3. Buscar por álbum") 
         print(" 0. Salir") 
-        opcion = input("Opcion >>> ")
+        option = input("Opcion >>> ")
 
-        if opcion == "1":            
-            song = input("Escribe el nombre de una canción: ")
+        if option == "1":   
+
+            song = input("Escribe el nombre de una canción: ")           
+            downloadMenu(client, username, option, song)
             
-            downloadMenu(client, username, opcion, song)
-            
-        elif opcion == "2":
+        elif option == "2":
+
             artist = input("Escribe el nombre de un artista: ")
-
-            downloadMenu(client, username, opcion, artist)
+            downloadMenu(client, username, option, artist)
                     
-        elif opcion == "3":
-            song = input("Escribe el nombre de un álbum: ")
+        elif option == "3":
 
-        elif opcion == "0":
-            print("\nCerrando cliente NAPSTER...")   
-            break
+            album = input("Escribe el nombre de un álbum: ")
+
+        elif option == "0":
+
+            option3 = input("Seguro desea salir de NAPSTER?\n 1. Si / 2. No : ")
+            if option3 == "1":
+                print("\nCerrando cliente NAPSTER...")              
+                sys.exit()   
+            elif option3 == "2": 
+                pass
+
         else:
             print("Digite una opción válida!")
+
     return 0

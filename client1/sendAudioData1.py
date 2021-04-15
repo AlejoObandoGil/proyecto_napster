@@ -1,6 +1,5 @@
 # ---------------------BUSCAR Y ENVIAR METADATOS MUSICA EN CARPETA LOCAL CLIENTE---------------------------------------
-import os
-import datetime
+import os, datetime
 from tinytag import TinyTag, TinyTagException
 
 # Esta funcion busca canciones invididuales o sin album en la carpeta local del cliente
@@ -79,9 +78,10 @@ def sendAlbum(username):
                             numTrack += 1
                             
                         except TinyTagException:
-                            print("Error. No se puede leer el archivo.")                               
+                            print("Error. No se puede leer el archivo.") 
 
     return lsAlbums, numAlbum, lsTracks, numTrack
+
 
 # ---------------------BUSCAR Y ENVIAR ARCHIVOS DE MUSICA EN CARPETA LOCAL CLIENTE---------------------------------------
 
@@ -97,7 +97,6 @@ def sendTrackClient():
         for name in files:
             # Si extension del archivo es tipo musica agregamos a lista
             if name.endswith((".mp3", ".mp4a", ".flac", ".alac", ".wav", ".wma", ".ogg")):
-
                 try:
                     # Creamos un objeto tinyTag por cada cancion y obtenemos sus metadatos y los guardamos en una lista
                     temp_track = TinyTag.get(root + "\\" + name)
@@ -114,12 +113,9 @@ def sendTrackClient():
                     
                 except TinyTagException:
                     print("Error. No se puede leer el archivo.")
-                
-    # print("\nLISTA DE CANCIONES: ", lsTracks) 
 
     return lsTracks
 
-# sendTrackClient()
 
 # Esta funcion busca albumes en la carptea lcoal del cliente. Los albumes estan en una carpeta diferente de las canciones individuales.
 def sendAlbumClient():
@@ -152,14 +148,3 @@ def sendAlbumClient():
 
     return lsTracks, lsAlbums
 
-
-
-# data = open("musica\\cliente2\\canciones2\\damian marley - welcome to jam rock.mp3", "rb")
-# dataFile = data.read()
-# print(dataFile)
-# song = "kukis"
-# file = open("musica\\cliente1\\descargas\\" + song + ".mp3", "wb")
-# file.write(dataFile)
-# print(file)
-# file.close()
-# print("HEcho")

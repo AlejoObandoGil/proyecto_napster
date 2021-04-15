@@ -1,8 +1,10 @@
-from xmlrpc.server import SimpleXMLRPCServer
-from xmlrpc.server import SimpleXMLRPCRequestHandler
-import xmlrpc.client
 import os
 import threading
+import json
+import xmlrpc.client
+from xmlrpc.server import SimpleXMLRPCServer
+from xmlrpc.server import SimpleXMLRPCRequestHandler
+
 from tinytag import TinyTag, TinyTagException
 ## Python 3.7
 ## Servidor Principal: 
@@ -34,10 +36,6 @@ portTest = 2869
 class RequestHandler(SimpleXMLRPCRequestHandler):
     rpc_paths = ('/RPC2',)
 
-def createClient(host, puerto):
-    
-
-    return server
 
 # Conexion para clientes
 server1 = SimpleXMLRPCServer((host1, port1), requestHandler=RequestHandler, allow_none=True) 
@@ -55,20 +53,28 @@ server2.register_introspection_functions()
 lsTotalDataCli = []
 lsTotalTracks = []
 
-print("\n**********BETA NAPSTER RPC************")    
+print("\n**************************************************NAPSTER RPC************************************************************")  
 print("\nServidor NAPSTER Principal escuchando...")
+
 
 def connectionExist(clientConnected):
     print("Cliente conectado: ", clientConnected)
 
     return 0
 
-def listenClientData(username, host, port):
+
+def listenClientData(json_username, json_host, json_port):
     # Datos del cliente
     print("\n_____________________________________________________________________________________________________________________________________________________\n")
     print("\nCargando datos de cliente...")
     print(".....")
     # Recibimos la informacion de los clientes
+    print(json_username)
+    print(type(json_username))
+    username = json.loads(json_username)
+    host = json.loads(json_host)
+    port = json.loads(json_port)
+
     global user
     user = username
     h = host
@@ -80,7 +86,11 @@ def listenClientData(username, host, port):
 
     print("DATOS DEL CLIENTE: ", lsDataClient)
 
-def listenClientSong(lsTracks, numTrack):
+
+def listenClientSong(json_lsTracks, json_numTrack):
+
+    lsTracks = json.loads(json_lsTracks)
+    numTrack = json.loads(json_numTrack)
 
     global lsTotalTracks
     lsTotalTracks+=lsTracks
@@ -88,7 +98,14 @@ def listenClientSong(lsTracks, numTrack):
     print("\nLISTA METADATOS DE CANCIONES: ", lsTracks) 
     print("\nNUMERO DE CANCIONES: ", numTrack)
     
-def listenClientAlbum(lsAlbums, numAlbum, lsTracksAlbums, numTrackAlbum):
+
+def listenClientAlbum(json_lsAlbums, json_numAlbum, json_lsTracksAlbums, json_numTrackAlbum):
+
+    lsAlbums = json.loads(json_lsAlbums)
+    numAlbum = json.loads(json_numAlbum)   
+    lsTracksAlbums = json.loads(json_lsTracksAlbums)
+    numTrackAlbum = json.loads(json_numTrackAlbum)
+
     global lsTotalTracks
     lsTotalTracks+=lsTracksAlbums
 
@@ -106,8 +123,13 @@ def listenClientAlbum(lsAlbums, numAlbum, lsTracksAlbums, numTrackAlbum):
     print("\nLISTA TOTAL DE CANCIONES EXISTENTES EN EL SERVIDOR: ", lsTotalTracks)
     print("\nNUMERO DE CANCIONES EXISTENTES EN EL SERVIDOR: ", len(lsTotalTracks))
     
+
 # Funcion para buscar una cancion alojada en el servidor
-def searchTrack(search, op):
+def searchTrack(json_search, json_op):
+
+    search = json.loads(json_search)
+    op = json.loads(json_op)
+
     newSong = []
     lsNewSong = []
     lsNewDir = []
@@ -140,9 +162,14 @@ def searchTrack(search, op):
         print("\n" + message)   
 
     print(lsNewSong)
-    return lsNewSong, lsNewDir, message
 
-# ------------------------------------HILOS SERVIDOR----------------------------------------
+    json_lsNewSong = json.dumps(lsNewSong)
+    json_newDir = json.dumps(lsNewDir)   
+    json_message = json.dumps(message)
+
+    return json_lsNewSong, json_newDir, json_message
+
+# ------------------------------------PROGRAMA PRINCIPAL E HILOS SERVIDOR----------------------------------------
                  
 # Hilo Responsable de recibir infomacion de los clientes
 class ServerThread(threading.Thread):
@@ -160,7 +187,6 @@ class ServerThread(threading.Thread):
          server1.register_function(searchTrack)
          server1.serve_forever()
          
-        
 # Hilo Responsable del buscador de musica y enviar datos de musica encontrada
 class ServerThread2(threading.Thread):
 	def _init_(self):
@@ -173,11 +199,10 @@ class ServerThread2(threading.Thread):
          server2.register_function(listenClientSong)
          server2.register_function(listenClientAlbum)
          print("Servidor Conectado...")
-        #  server2.handle_request()
 
          server2.register_function(searchTrack)
-
          print("Esperando Peticion del cliente...")
+
          server2.serve_forever()
         
 # class ServerThread2(threading.Thread):
@@ -195,9 +220,11 @@ class ServerThread2(threading.Thread):
         #  server3.handle_request()
         #  print("cerrado")
 
-serverReceive1 = ServerThread()
-serverReceive1.start()  
-serverReceive2 = ServerThread2()
-serverReceive2.start()    
+if __name__=="__main__":
+
+    serverReceive1 = ServerThread()
+    serverReceive1.start()  
+    serverReceive2 = ServerThread2()
+    serverReceive2.start()    
 
 

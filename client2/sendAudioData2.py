@@ -1,6 +1,5 @@
 # ---------------------FUNCIONES BUSCAR MUSICA EN CARPETA LOCAL CLIENTE---------------------------------------
-import os
-import datetime
+import os, datetime
 from tinytag import TinyTag, TinyTagException
 
 # Esta funcion busca canciones invididuales o sin album en la carpeta local del cliente

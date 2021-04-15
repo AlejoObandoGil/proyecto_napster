@@ -5,22 +5,22 @@ realizar las siguientes operaciones:
 1. El servidor debe guardar la información del listado de canciones y álbumes que 
 los clientes están compartiendo en una carpeta local. Además, se debe enviar
 la dirección y puerto de dichos clientes. (crear carpeta de canciones y carpetas de álbumes) 
-LISTO
+L
 
 2. Cuando los clientes se ejecutan, deben enviar esta información al servidor.
-LISTO
+L
 
 3. En caso de que el servidor no esté disponible, los clientes deben buscar un segundo
 servidor para enviar la información. (servidor espejo, se van a tener 2 servidores iguales dónde se va guardar la misma información de los clientes)
-LISTO
+L
 
 4. Desde cualquier cliente se debe poder pedir el listado de álbumes o canciones al
 servidor teniendo en cuenta que los criterios de búsqueda son: artista, álbum o canción.
-EN PROCESO
+E P
 
 5. El servidor envía al cliente la dirección y puerto de todos los clientes que poseen
 el álbum o la canción solicitada.
-LISTO
+L
 
 6. El cliente se conecta de manera directa a todos y cada uno de los clientes de manera
 simultánea, y debe descargar la información solicitada de todos ellos. Es decir, cada
@@ -28,10 +28,11 @@ uno debe enviar una parte para tener el total de la información en el cliente.(
 
 7. Una vez descargada la información, el cliente solicitante debe reproducir la canción
 o una de las canciones que se descargó en caso de que sea un álbum.
-LISTO
+L
 
 8. Para el intercambio de información y datos entre las partes involucradas se debe
 usar JSON.
+L
 
 Consideraciones para la entrega:
 <<<<<

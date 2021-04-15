@@ -1,17 +1,18 @@
+import os
+import threading
+import json
+import xmlrpc.client
 from xmlrpc.server import SimpleXMLRPCServer
 from xmlrpc.server import SimpleXMLRPCRequestHandler
-import xmlrpc.client
-import threading
-import os
+
 from sendAudioData2 import sendTrack, sendAlbum, sendTrackClient, sendAlbumClient
 from menu2 import menu
 # Python 3.7
 # Cliente RPC
-
 # ----------------------------------------------------CLIENTE--------------------------------------------------------------
 # -------------------------------------------------------------------------------------------------------------------------
 # -----------------------------------------------CONFIGURACION CONEXION----------------------------------------------------
-# direcciones para los servidores
+# Globales
 # Servidor 1
 host1 = "127.0.0.1"
 port1 = 9998
@@ -20,7 +21,6 @@ host2 = "127.0.0.1"
 port2 = 9898
 
 portTest = 2869
-
 # direcciones para los clientes que se conecten
 global host3
 global port3
@@ -33,9 +33,9 @@ port4 = 9698
 class RequestHandler(SimpleXMLRPCRequestHandler):
     rpc_paths = ('/RPC2',)
 
-print("\n****************************NAPSTER RPC**********************************")  
+print("\n**************************************************NAPSTER RPC************************************************************")    
 
-# Funcion que conecta con servidores
+# Funcion que configura la conexion con los dos servidores
 # Variables bandera para conocer el servidor al que esta conectado este cliente
 global clientConnected 
 clientConnected = False
@@ -65,6 +65,7 @@ if clientConnected == False:
 else:
     print("\nError fatal. No consiguio conectarse con ningun servidor.")             
 
+
 def dataClient():
 
     global username
@@ -78,7 +79,9 @@ def dataClient():
     if clientConnected2 == True:  
         print("\n", username, "ha iniciado sesion.\nTe conectaste desde el servidor Secundario desde: Direccion: ", host2, " Puerto: ", port2)    
         print("La Direccion de ", username, "para conectarse a otros clientes es: ", host3, " y el puerto es: ", port3)
-        return username, host3, port3       
+        return username, host3, port3    
+
+    return 0        
 
 # --------------------------------------------EJECUCION E HILOS------------------------------------------------------
 
@@ -92,12 +95,23 @@ class ClientThread(threading.Thread):
          lsTracks, numTrack = sendTrack(username)
          lsAlbums, numAlbum, lsTrackAlbums, numTrackAlbum = sendAlbum(username)
          
-         cliente1.listenClientData(username, host, port)
-         cliente1.listenClientSong(lsTracks, numTrack)
-         cliente1.listenClientAlbum(lsAlbums, numAlbum, lsTrackAlbums, numTrackAlbum)
+         json_username = json.dumps(username)
+         json_host = json.dumps(host)
+         json_port = json.dumps(port)  
+
+         json_lsTracks = json.dumps(lsTracks)
+         json_numTrack = json.dumps(numTrack)
+
+         json_lsAlbums = json.dumps(lsAlbums)
+         json_numAlbum = json.dumps(numAlbum)
+         json_lsTrackAlbums = json.dumps(lsTrackAlbums)
+         json_numTrackAlbum = json.dumps(numTrackAlbum)  
+         
+         cliente1.listenClientData(json_username, json_host, json_port)
+         cliente1.listenClientSong(json_lsTracks, json_numTrack)
+         cliente1.listenClientAlbum(json_lsAlbums, json_numAlbum, json_lsTrackAlbums, json_numTrackAlbum)
          print("\nSe han compartido tus archivos locales con el servidor Principal.")
-         menu(cliente1, username)
-         print("\nPetición ejecutada con exito!")   
+         menu(cliente1, username) 
 
 # Hilo Responsable de enviar informacion al servidor2
 class ClientThread2(threading.Thread):
@@ -109,9 +123,22 @@ class ClientThread2(threading.Thread):
          lsTracks, numTrack, lsFileTracks  = sendTrack(username)
          lsAlbums, numAlbum, lsTrackAlbums, numTrackAlbum, lsFileTracksA = sendAlbum(username)
 
-         cliente2.listenClientData(username, host, port)
-         cliente2.listenClientSong(lsTracks, numTrack, lsFileTracks)
-         cliente2.listenClientAlbum(lsAlbums, numAlbum, lsTrackAlbums, numTrackAlbum, lsFileTracksA)
+         json_username = json.dumps(username)
+         json_host = json.dumps(host)
+         json_port = json.dumps(port)  
+
+         json_lsTracks = json.dumps(lsTracks)
+         json_numTrack = json.dumps(numTrack)
+
+         json_lsAlbums = json.dumps(lsAlbums)
+         json_numAlbum = json.dumps(numAlbum)
+         json_lsTrackAlbums = json.dumps(lsTrackAlbums)
+         json_numTrackAlbum = json.dumps(numTrackAlbum)  
+         
+         cliente2.listenClientData(json_username, json_host, json_port)
+         cliente2.listenClientSong(json_lsTracks, json_numTrack)
+         cliente2.listenClientAlbum(json_lsAlbums, json_numAlbum, json_lsTrackAlbums, json_numTrackAlbum)
+         
          print("\nSe han compartido tus archivos locales con el servidor Secundarios.") 
          menu(cliente2, username)
          print("\nPetición ejecutada con exito!")   
@@ -120,40 +147,43 @@ class ClientThread2(threading.Thread):
 if clientConnected == True: 
     clientSend = ClientThread()
     clientSend.start()
-    # clientSearch = ClientThread3()
-    # clientSearch.start()
+
 elif clientConnected2 == True:
     clientSend2 = ClientThread2()
     clientSend2.start()
-    # clientSearch = ClientThread3()
-    # clientSearch.start()
+
 else :
     print("\nError fatal al ejecutar servicios del cliente!")
-#--------------------------------------FINAL CLIENTE-----------------------------------------------    
-
-#--------------------------------------------SERVIDOR-----------------------------------------------
+#---------------------------------------FINAL CLIENTE-----------------------------------------------    
+#------------------------------------------SERVIDOR-------------------------------------------------
 #---------------------------------------------------------------------------------------------------
 
 #conexion tipo servidor para el cliente que quiere descargar una cancion 
 serverCli = SimpleXMLRPCServer((host3, port3), requestHandler=RequestHandler, allow_none=True) 
 serverCli.register_introspection_functions()
 
-def shareSong(nameFile, op):
+def shareSong(json_nameFile, json_op):
+
+    nameFile = json.loads(json_nameFile)
+    op = json.loads(json_op)
+
     file = ""
     lsTracks = sendTrackClient()
     lsTrackAlbums, lsAlbums = sendAlbumClient()
     for track in lsTracks:
         if track[0] == nameFile or track[op] == nameFile:
             file = track[3]
-            print("\nArchivo listo para enviar!")
+            print("\nCompartiste un archivo! Nombre: ", track[0])
 
     for track in lsTrackAlbums:
         if track[0] == nameFile or track[op] == nameFile:
             file = track[3]
-            print("\nArchivo listo para enviar!")        
+            print("\nCompartiste un archivo! Nombre: ", track[0])       
 
     if file == "":
         print("\nError. El archivo no fue encontrado!")
+
+    # json_file = json.dumps(file)
 
     return file # xmlrpc.client.Binary(file)
 

@@ -66,3 +66,10 @@ leer archivos
 
 Object XMLRPC - Binary file
 [4] https://docs.python.org/3/library/xmlrpc.client.html#binary-objects
+
+JSON con python
+[5] https://www.w3schools.com/python/python_json.asp
+
+serializacion y deserealizacion python 
+[6] https://www.tutorialesprogramacionya.com/pythonya/detalleconcepto.php?punto=101&codigo=102&inicio=90
+

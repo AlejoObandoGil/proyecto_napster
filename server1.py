@@ -182,9 +182,9 @@ class ServerThread(threading.Thread):
          server1.register_function(listenClientData)
          server1.register_function(listenClientSong)
          server1.register_function(listenClientAlbum)
-        #  server1.handle_request()
+        # server1.handle_request()
 
-         server1.register_function(searchTrack)
+         server1.register_function(searchTrack) 
          server1.serve_forever()
          
 # Hilo Responsable del buscador de musica y enviar datos de musica encontrada

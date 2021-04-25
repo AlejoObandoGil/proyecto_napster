@@ -5,6 +5,7 @@ import xmlrpc.client
 from xmlrpc.server import SimpleXMLRPCServer
 from xmlrpc.server import SimpleXMLRPCRequestHandler
 
+
 from musicPlayer1 import playMusic
 
 def downloadMenu(client, username, op, song):
@@ -32,7 +33,7 @@ def downloadMenu(client, username, op, song):
             userServer = ""
             hostServer = ""
             portServer = 0
-            print("\nMENU DE DESCARGA NAPSTER")
+            print("\nMENU DE DESCARGA NAPSTER  *** ", username, " ***")
             print("\nLista de canciones encontradas.")
             for Track in lsNewSong:
                 print("\n- Nombre cancion:", Track[0],"- Titulo:", Track[1], "- Artista:", Track[2])
@@ -96,9 +97,10 @@ def downloadMenu(client, username, op, song):
 
 def menu(client, username):
     # Primer menu: es el menu principal 
+    closeMenu = False
     while True:
         print("\n_______________________________________________________________________________________________________________________________________________________")      
-        print("\nMENU PRINCIPAL DE NAPSTER")
+        print("\nMENU PRINCIPAL DE NAPSTER  *** ", username, " ***")
         print(" 1. Buscar por canción")
         print(" 2. Buscar por artista")
         print(" 3. Buscar por álbum") 
@@ -123,10 +125,15 @@ def menu(client, username):
 
             option3 = input("Seguro desea salir de NAPSTER?\n 1. Si / 2. No : ")
             if option3 == "1":
-                print("\nCerrando cliente NAPSTER...")              
-                sys.exit()   
+                print("\nCerrando cliente NAPSTER...")  
+                closeMenu = True
+                return closeMenu            
+                break 
+                
             elif option3 == "2": 
                 pass
+            else:
+                print("Digite una opción válida!")
 
         else:
             print("Digite una opción válida!")

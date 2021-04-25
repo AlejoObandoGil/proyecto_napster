@@ -16,7 +16,7 @@ def downloadMenu(client, username, op, song):
     json_song = json.dumps(song)
     json_option = json.dumps(option)
 
-    # Instancia de la funcion buscar del servidor y guardamos datos de la cancion y usuario en cliente   
+    # Instancia de la funcion buscar del servidor y guardar datos de la cancion y usuario en cliente   
     json_lsNewSong, json_lsNewDir, json_message = client.searchTrack(json_song, json_option)
 
     lsNewSong = json.loads(json_lsNewSong)
@@ -32,7 +32,7 @@ def downloadMenu(client, username, op, song):
             userServer = ""
             hostServer = ""
             portServer = 0
-            print("\nMENU DE DESCARGA NAPSTER")
+            print("\nMENU DE DESCARGA NAPSTER  *** ", username, " ***")
             print("\nLista de canciones encontradas.")
             for Track in lsNewSong:
                 print("\n- Nombre cancion:", Track[0],"- Titulo:", Track[1], "- Artista:", Track[2])
@@ -96,9 +96,10 @@ def downloadMenu(client, username, op, song):
 
 def menu(client, username):
     # Primer menu: es el menu principal 
+    closeMenu = False
     while True:
         print("\n_______________________________________________________________________________________________________________________________________________________")      
-        print("\nMENU PRINCIPAL DE NAPSTER")
+        print("\nMENU PRINCIPAL DE NAPSTER  *** ", username, " ***")
         print(" 1. Buscar por canción")
         print(" 2. Buscar por artista")
         print(" 3. Buscar por álbum") 
@@ -123,10 +124,14 @@ def menu(client, username):
 
             option3 = input("Seguro desea salir de NAPSTER?\n 1. Si / 2. No : ")
             if option3 == "1":
-                print("\nCerrando cliente NAPSTER...")              
-                sys.exit()   
+                print("\nCerrando cliente NAPSTER...")
+                closeMenu = True
+                return closeMenu               
+                break  
             elif option3 == "2": 
                 pass
+            else:
+                print("Digite una opción válida!")
 
         else:
             print("Digite una opción válida!")

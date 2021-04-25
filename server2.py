@@ -119,7 +119,11 @@ def listenClientAlbum(json_lsAlbums, json_numAlbum, json_lsTracksAlbums, json_nu
     
     
 # Funcion para buscar una cancion alojada en el servidor
-def searchTrack(search, op):
+def searchTrack(json_search, json_op):
+
+    search = json.loads(json_search)
+    op = json.loads(json_op)
+
     newSong = []
     lsNewSong = []
     lsNewDir = []
@@ -158,6 +162,7 @@ def searchTrack(search, op):
     json_message = json.dumps(message)
 
     return json_lsNewSong, json_newDir, json_message
+    
 # ------------------------------------PROGRAMA PRINCIPAL E HILOS SERVIDOR----------------------------------------
                  
 # Hilo Responsable de recibir infomacion de los clientes

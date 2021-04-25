@@ -37,39 +37,46 @@ print("\n**************************************************NAPSTER RPC**********
 
 # Funcion que configura la conexion con los dos servidores
 # Variables bandera para conocer el servidor al que esta conectado este cliente
-global clientConnected 
-clientConnected = False
-global clientConnected2
-clientConnected2 = False
-# Si el servidor1 esta activo se conecta con ese
-if clientConnected == False:
-    try:
-        # Crear conexion para un Servidor RPC, con el metodo client de xmlrpc 
-        cliente1 = xmlrpc.client.ServerProxy('http://' + host1 + ':' + str(port1), allow_none=True)
-        print("\nCliente conectando a servidor Principal...")
-        clientConnected = True
-        cliente1.connectionExist(clientConnected)
-    except:
-        print("\nError. No se puede establecer conexion a servidor Principal.")
-        clientConnected = False
-        # Si el servidor1 esta inactivo intenta conectar con servidor2
-        if clientConnected == False: 
-            global cliente2           
-            cliente2 = xmlrpc.client.ServerProxy('http://' + host2 + ':' + str(port2), allow_none=True)
-            print("\nCliente conectando a servidor Secundario...")
-            clientConnected2 = True
-            cliente2.connectionExist(clientConnected2)
-        else:
-            print("\nError. No se puede establecer conexion a servidor Secundario.")  
-            clientConnected2 = False
-else:
-    print("\nError fatal. No consiguio conectarse con ningun servidor.")             
+def serverConection():
+    global clientConnected 
+    clientConnected = False
+    global clientConnected2
+    clientConnected2 = False
+    # Si el servidor1 esta activo se conecta con ese
+    if clientConnected == False:
+        try:
+            # Crear conexion para un Servidor RPC, con el metodo client de xmlrpc 
+            cliente = xmlrpc.client.ServerProxy('http://' + host1 + ':' + str(port1), allow_none=True)
+            print("\nCliente conectando a servidor Principal...")
+            clientConnected = True
+            cliente.connectionExist(clientConnected)
+            
+        except:
+            print("\nError. No se puede establecer conexion a servidor Principal.")
+            clientConnected = False
+            # Si el servidor1 esta inactivo intenta conectar con servidor2
+            if clientConnected == False: 
+                try:          
+                    cliente = xmlrpc.client.ServerProxy('http://' + host2 + ':' + str(port2), allow_none=True)
+                    print("\nCliente conectando a servidor Secundario...")
+                    clientConnected2 = True
+                    cliente.connectionExist(clientConnected2)
+                except:
+                    print("\nError fatal. No consiguio conectarse con ningun servidor.")
+                    clientConnected2 = False
+            else:
+                print("\nError. No se puede establecer conexion a servidor Secundario.")  
+                clientConnected2 = False
+    else:
+        print("\nError fatal. No consiguio conectarse con ningun servidor.")             
+
+    return cliente
 
 
 def dataClient():
 
     global username
-    username = "Thanos" # input("Digita un nombre de usuario para identificarte en NAPSTER: ")
+    username = "JonAlejo" # input("Digita un nombre de usuario para identificarte en NAPSTER: ")
 
     if clientConnected == True:  
         print("\n", username, " ha iniciado sesion.\nTe conectaste al servidor Principal desde: Direccion: ", host1, " Puerto: ", port1)    
@@ -84,34 +91,44 @@ def dataClient():
     return 0        
 
 # --------------------------------------------EJECUCION E HILOS------------------------------------------------------
-
 # Hilo Responsable de enviar informacion al servidor1
 class ClientThread(threading.Thread):
 	def _init_(self):
 		threading.Thread._init_(self)      
 
 	def run(self):
-         username, host, port = dataClient()
-         lsTracks, numTrack = sendTrack(username)
-         lsAlbums, numAlbum, lsTrackAlbums, numTrackAlbum = sendAlbum(username)
-         
-         json_username = json.dumps(username)
-         json_host = json.dumps(host)
-         json_port = json.dumps(port)  
+         global desconected
+         desconected = False
+         client = serverConection()
+         if clientConnected:
+             
+             username, host, port = dataClient()
+             lsTracks, numTrack = sendTrack(username)
+             lsAlbums, numAlbum, lsTrackAlbums, numTrackAlbum = sendAlbum(username)
+            
+             json_username = json.dumps(username)
+             json_host = json.dumps(host)
+             json_port = json.dumps(port)  
 
-         json_lsTracks = json.dumps(lsTracks)
-         json_numTrack = json.dumps(numTrack)
+             json_lsTracks = json.dumps(lsTracks)
+             json_numTrack = json.dumps(numTrack)
 
-         json_lsAlbums = json.dumps(lsAlbums)
-         json_numAlbum = json.dumps(numAlbum)
-         json_lsTrackAlbums = json.dumps(lsTrackAlbums)
-         json_numTrackAlbum = json.dumps(numTrackAlbum)  
-         
-         cliente1.listenClientData(json_username, json_host, json_port)
-         cliente1.listenClientSong(json_lsTracks, json_numTrack)
-         cliente1.listenClientAlbum(json_lsAlbums, json_numAlbum, json_lsTrackAlbums, json_numTrackAlbum)
-         print("\nSe han compartido tus archivos locales con el servidor Principal.")
-         menu(cliente1, username) 
+             json_lsAlbums = json.dumps(lsAlbums)
+             json_numAlbum = json.dumps(numAlbum)
+             json_lsTrackAlbums = json.dumps(lsTrackAlbums)
+             json_numTrackAlbum = json.dumps(numTrackAlbum)  
+            
+             client.listenClientData(json_username, json_host, json_port)
+             client.listenClientSong(json_lsTracks, json_numTrack)
+             client.listenClientAlbum(json_lsAlbums, json_numAlbum, json_lsTrackAlbums, json_numTrackAlbum)
+             print("\nSe han compartido tus archivos locales con el servidor Principal de NAPSTER RPC.")
+
+             desconected = menu(client, username)
+             
+             #print(desconected)
+
+                
+
 
 # Hilo Responsable de enviar informacion al servidor2
 class ClientThread2(threading.Thread):
@@ -119,43 +136,42 @@ class ClientThread2(threading.Thread):
 		threading.Thread._init_(self)      
 
 	def run(self):
-         username, host, port = dataClient()       
-         lsTracks, numTrack, lsFileTracks  = sendTrack(username)
-         lsAlbums, numAlbum, lsTrackAlbums, numTrackAlbum, lsFileTracksA = sendAlbum(username)
+         global desconected
+         desconected = False
+         client = serverConection()
+         if clientConnected2: 
+             
+             username, host, port = dataClient()       
+             lsTracks, numTrack = sendTrack(username)
+             lsAlbums, numAlbum, lsTrackAlbums, numTrackAlbum = sendAlbum(username)
 
-         json_username = json.dumps(username)
-         json_host = json.dumps(host)
-         json_port = json.dumps(port)  
+             json_username = json.dumps(username)
+             json_host = json.dumps(host)
+             json_port = json.dumps(port)  
 
-         json_lsTracks = json.dumps(lsTracks)
-         json_numTrack = json.dumps(numTrack)
+             json_lsTracks = json.dumps(lsTracks)
+             json_numTrack = json.dumps(numTrack)
 
-         json_lsAlbums = json.dumps(lsAlbums)
-         json_numAlbum = json.dumps(numAlbum)
-         json_lsTrackAlbums = json.dumps(lsTrackAlbums)
-         json_numTrackAlbum = json.dumps(numTrackAlbum)  
-         
-         cliente2.listenClientData(json_username, json_host, json_port)
-         cliente2.listenClientSong(json_lsTracks, json_numTrack)
-         cliente2.listenClientAlbum(json_lsAlbums, json_numAlbum, json_lsTrackAlbums, json_numTrackAlbum)
-         
-         print("\nSe han compartido tus archivos locales con el servidor Secundarios.") 
-         menu(cliente2, username)
-         print("\nPetición ejecutada con exito!")   
+             json_lsAlbums = json.dumps(lsAlbums)
+             json_numAlbum = json.dumps(numAlbum)
+             json_lsTrackAlbums = json.dumps(lsTrackAlbums)
+             json_numTrackAlbum = json.dumps(numTrackAlbum)  
+            
+             client.listenClientData(json_username, json_host, json_port)
+             client.listenClientSong(json_lsTracks, json_numTrack)
+             client.listenClientAlbum(json_lsAlbums, json_numAlbum, json_lsTrackAlbums, json_numTrackAlbum)
+             print("\nSe han compartido tus archivos locales con el servidor Secundario de NAPSTER RPC.")
 
-# Dependiendo el servidor a que este conectado Ejecuta los hilos 
-if clientConnected == True: 
-    clientSend = ClientThread()
-    clientSend.start()
+             desconected = menu(client, username)
+            #  print("chao") 
 
-elif clientConnected2 == True:
-    clientSend2 = ClientThread2()
-    clientSend2.start()
+             
+             
+        #  else:
+        #      print("\nError fatal al ejecutar servicios del cliente!")                     
 
-else :
-    print("\nError fatal al ejecutar servicios del cliente!")
-#---------------------------------------FINAL CLIENTE-----------------------------------------------    
-#------------------------------------------SERVIDOR-------------------------------------------------
+#----------------------------------------FINAL CLIENTE----------------------------------------------    
+#-------------------------------------------SERVIDOR------------------------------------------------
 #---------------------------------------------------------------------------------------------------
 
 #conexion tipo servidor para el cliente que quiere descargar una cancion 
@@ -195,11 +211,21 @@ class ClientServerThread(threading.Thread):
 		threading.Thread._init_(self)      
 
 	def run(self): 
+         
+
          serverCli.register_function(shareSong)  
 
-         serverCli.serve_forever()
+         serverCli.handle_request()
 
-clientServer = ClientServerThread()
-clientServer.start()
 
-#----------------------------------------------FINAL SERVIDOR-------------------------------------------------------
+#----------------------------------------------FINAL SERVIDOR-----------------------------------------------  
+
+# Principal
+if __name__=="__main__":
+
+    clientSend = ClientThread()
+    clientSend.start()
+    clientSend2 = ClientThread2()
+    clientSend2.start()
+    clientServer = ClientServerThread()
+    clientServer.start()        

@@ -76,7 +76,7 @@ def serverConection():
 def dataClient():
 
     global username
-    username = "Nata_de_laLeche" # input("Digita un nombre de usuario para identificarte en NAPSTER: ")
+    username = "Natalia" # input("Digita un nombre de usuario para identificarte en NAPSTER: ")
 
     if clientConnected == True:  
         print("\n", username, "ha iniciado sesion.\nTe conectaste al servidor Principal desde: Direccion: ", host1, " Puerto: ", port1)    
@@ -193,6 +193,7 @@ def shareSong(json_nameFile, json_op):
     for track in lsTracks:
         if track[0] == nameFile or track[op] == nameFile:
             file = track[3]
+
             print("\nCompartiste un archivo! Nombre: ", track[0])
 
     for track in lsTrackAlbums:
@@ -203,12 +204,34 @@ def shareSong(json_nameFile, json_op):
     if file == "":
         print("\nError. El archivo no fue encontrado!")
 
-# json_file = json.dumps(file)
-
-    return file # xmlrpc.client.Binary(file)
+    return file 
 
 
-# def closeServer()
+def shareAlbum(json_lsNameFile, json_op):
+
+    lsnameFile = json.loads(json_lsNameFile)
+    op = json.loads(json_op)
+
+    lsFile = []
+    lsTracks = sendTrackClient()
+    lsTrackAlbums, lsAlbums = sendAlbumClient()
+
+    for nf in lsNameFile:
+        for track in lsTracks:
+            if track[0] == nf or track[op] == nf:
+                lsFile.append(track[3])
+                print("\nCompartiste un archivo! Nombre: ", track[0])
+
+        for track in lsTrackAlbums:
+            if track[0] == nf or track[op] == nf:
+                lsFile.append(track[3])
+                print("\nCompartiste un archivo! Nombre: ", track[0])       
+
+    if len(lsFile) == 0:
+        print("\nError. El archivo no fue encontrado!")
+
+    return lsFile    
+
 
 #--------------------------------------------------HILOS----------------------------------------------------------
 
@@ -220,13 +243,20 @@ class ClientServerThread(threading.Thread):
 	def run(self): 
         #  close = menu(client, username)
 
-         serverCli.register_function(shareSong)  
+         serverCli.register_function(shareSong) 
+         serverCli.register_function(shareAlbum)  
          serverCli.handle_request()
 
     
-
 #----------------------------------------------FINAL SERVIDOR-----------------------------------------------  
 
 
+if __name__=="__main__":
     
+    clientSend = ClientThread()
+    clientSend.start()
+    clientSend2 = ClientThread2()
+    clientSend2.start()
+    clientServer = ClientServerThread()
+    clientServer.start()       
 

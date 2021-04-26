@@ -25,24 +25,12 @@ def sendTrack(username):
                     duration = str(datetime.timedelta(seconds=durationMinute))
                     
                     # Creamos una lista con los metadatos de cada cancion y agregamos estas listas a otra lista para tener una matriz de canciones
-                    lsDataTracks = [name, temp_track.title, temp_track.artist, duration, temp_track.filesize, username]
+                    lsDataTracks = [name, temp_track.title, temp_track.artist, temp_track.album, duration, temp_track.filesize, username]
                     lsTracks.append(lsDataTracks)
                     numTrack += 1                   
                     
                 except TinyTagException:
                     print("Error. No se puede leer el archivo.")
-        # lista.clear()
-        # data = open("doc\\proy.txt", "rb")
-        # data = data.read(1024)
-
-        # file = open("doc\\proy.txt", "wb")
-        # file.write(data)
-        # file.close()
-        # print("HEcho")
-                
-    # print("\nLISTA DE CANCIONES: ", lsTracks) 
-    # print("\nNUMERO DE CANCIONES: ", numTracks)
-    # print("\nLISTA DE NOMBRES DE CANCIONES: ", lsNameTracks)
 
     return lsTracks, numTrack  
 
@@ -73,7 +61,7 @@ def sendAlbum(username):
                             durationMinute = round(float(d), 2)
                             duration = str(datetime.timedelta(seconds=durationMinute))
                             
-                            lsDataTracks = [trackName, temp_track.title, temp_track.artist, duration, temp_track.filesize, username, dirName]
+                            lsDataTracks = [trackName, temp_track.title, temp_track.artist, dirName, duration, temp_track.filesize, username]
                             lsTracks.append(lsDataTracks)
                             numTrack += 1
                             

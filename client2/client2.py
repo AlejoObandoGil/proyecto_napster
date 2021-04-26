@@ -199,9 +199,34 @@ def shareSong(json_nameFile, json_op):
     if file == "":
         print("\nError. El archivo no fue encontrado!")
 
-    # json_file = json.dumps(file)
+    return file
 
-    return file # xmlrpc.client.Binary(file)
+
+def shareAlbum(json_lsNameFile, json_op):
+
+    lsnameFile = json.loads(json_lsNameFile)
+    op = json.loads(json_op)
+
+    lsFile = []
+    lsTracks = sendTrackClient()
+    lsTrackAlbums, lsAlbums = sendAlbumClient()
+
+    for nf in lsNameFile:
+        for track in lsTracks:
+            if track[0] == nf or track[op] == nf:
+                lsFile.append(track[3])
+                print("\nCompartiste un archivo! Nombre: ", track[0])
+
+        for track in lsTrackAlbums:
+            if track[0] == nf or track[op] == nf:
+                lsFile.append(track[3])
+                print("\nCompartiste un archivo! Nombre: ", track[0])       
+
+    if len(lsFile) == 0:
+        print("\nError. El archivo no fue encontrado!")
+
+    return lsFile   
+
 
 #--------------------------------------------------HILOS----------------------------------------------------------
 
@@ -211,10 +236,10 @@ class ClientServerThread(threading.Thread):
 		threading.Thread._init_(self)      
 
 	def run(self): 
-         
+        #  close = menu(client, username)
 
-         serverCli.register_function(shareSong)  
-
+         serverCli.register_function(shareSong) 
+        #  yserverCli.register_function(shareAlbum)  
          serverCli.handle_request()
 
 

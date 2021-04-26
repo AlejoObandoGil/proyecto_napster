@@ -138,7 +138,7 @@ def searchTrack(json_search, json_op):
         # Se busca la cancion por los dos primeros posiciones de la lista
         # nombre del archivo y titulo del archivo
         if track[0] == search or track[op] == search:
-            newSong = [track[0], track[1], track[2], track[3], track[4], track[5]]
+            newSong = [track[0], track[1], track[2], track[3], track[4], track[5], track[6]]
             # S la cancion se encuentra gardamos todos sus datos en una lista y guardamos en una lista de listas
             lsNewSong.append(newSong)
             # Ahora comparamos los usuarios para conocer su puerto y direccion
@@ -149,16 +149,21 @@ def searchTrack(json_search, json_op):
             if op == 1:
                 message = "Cancion encontrada!"           
                 print("\n" + message)
-            else:
+            elif op == 2:
                 message = "Artista encontrado!"           
                 print("\n" + message)
-
+            else:    
+                message = "Album encontrado!"           
+                print("\n" + message)
     # Si la lista esta vacia no encontro ninguna cancion        
     if len(lsNewSong) == 0 and op == 1:
         message = "Nombre incorrecto. La cancion no se encuentra!"
         print("\n" + message)
-    elif  len(lsNewSong) == 0 and op == 2:
+    elif len(lsNewSong) == 0 and op == 2:
         message = "Nombre incorrecto. El artista no se encuentra!"
+        print("\n" + message)   
+    elif len(lsNewSong) == 0 and op == 3: 
+        message = "Nombre incorrecto. El album no se encuentra!"
         print("\n" + message)   
 
     print(lsNewSong)

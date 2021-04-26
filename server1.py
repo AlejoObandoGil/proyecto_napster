@@ -143,7 +143,7 @@ def searchTrack(json_search, json_op):
             lsNewSong.append(newSong)
             # Ahora comparamos los usuarios para conocer su puerto y direccion
             for usern in lsTotalDataCli:
-                if usern[0] == newSong[5]:
+                if usern[0] == newSong[6]:
                     # Guardamos en una lisat de listas
                     lsNewDir.append(usern)
             if op == 1:

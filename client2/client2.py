@@ -239,8 +239,8 @@ class ClientServerThread(threading.Thread):
         #  close = menu(client, username)
 
          serverCli.register_function(shareSong) 
-        #  yserverCli.register_function(shareAlbum)  
-         serverCli.handle_request()
+         serverCli.register_function(shareAlbum)  
+         serverCli.serve_forever()
 
 
 #----------------------------------------------FINAL SERVIDOR-----------------------------------------------  

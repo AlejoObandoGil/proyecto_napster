@@ -245,7 +245,7 @@ class ClientServerThread(threading.Thread):
 
          serverCli.register_function(shareSong) 
          serverCli.register_function(shareAlbum)  
-         serverCli.handle_request()
+         serverCli.serve_forever()
 
     
 #----------------------------------------------FINAL SERVIDOR-----------------------------------------------  

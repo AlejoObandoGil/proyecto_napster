@@ -35,8 +35,8 @@ def downloadMenu(client, username, op, song):
             print("\nMENU DE DESCARGA NAPSTER  *** ", username, " ***")
             print("\nLista de canciones encontradas.")
             for Track in lsNewSong:
-                print("\n- Nombre cancion:", Track[0],"- Titulo:", Track[1], "- Artista:", Track[2])
-                print("- Duracion:", Track[3], "- Tamaño:", Track[4], "Bytes - Usuario:", Track[5])
+                print("\n- Nombre cancion:", Track[0],"- Titulo:", Track[1], "- Artista:", Track[2], "- Álbum:", Track[3])
+                print("- Duracion: %.2f", Track[4], "- Tamaño:", Track[5], "Bytes - Usuario:", Track[6])
             for direction in lsNewDir:
                 userServer = direction[0]
                 hostServer = direction[1]
@@ -61,30 +61,30 @@ def downloadMenu(client, username, op, song):
 
                     print("\nDescargando canción... Por favor espere...")
                     try:
-                        if option == 3:
-                             # Llamamos la funcion que busca el archivo en la carpeta del cliente de donde se descargara
-                            ls_File_data = clienteCliente.shareAlbum(json_song, json_option)
-                            for file_data in ls_file_data:
-                                # Guardamos la cancion en el directorio
-                                dirDownload = "musica\\cliente2\\descargas\\" + song + ".mp3"                       
-                                file = open(dirDownload, "wb")
-                                file.write(file_data.data)
-                                print("\nCanción descargada con éxito!\nLa ubicación del archivo es: ", dirDownload)
-                                download = 1
-                                # Cerramos el archivo 
-                                file.close()
-                        else:
+                        if option == 1 or option == 2:
                             # Llamamos la funcion que busca el archivo en la carpeta del cliente de donde se descargara
                             file_data = clienteCliente.shareSong(json_song, json_option)
                             # file_data = json.loads(json_file_data)
                             # Guardamos la cancion en el directorio
-                            dirDownload = "musica\\cliente2\\descargas\\" + song + ".mp3"                       
+                            dirDownload = "musica\\cliente1\\descargas\\" + song + ".mp3"                       
                             file = open(dirDownload, "wb")
                             file.write(file_data.data)
                             print("\nCanción descargada con éxito!\nLa ubicación del archivo es: ", dirDownload)
                             download = 1
                             # Cerramos el archivo 
                             file.close()
+                        elif option == 3:
+                            # Llamamos la funcion que busca el archivo en la carpeta del cliente de donde se descargara
+                            ls_File_data = clienteCliente.shareAlbum(json_song, json_option)
+                            for file_data in ls_file_data:
+                                # Guardamos la cancion en el directorio
+                                dirDownload = "musica\\cliente1\\descargas\\" + song + ".mp3"                       
+                                file = open(dirDownload, "wb")
+                                file.write(file_data.data)
+                                print("\nCanción descargada con éxito!\nLa ubicación del archivo es: ", dirDownload)
+                                download = 1
+                                # Cerramos el archivo 
+                                file.close()
                     except:
                         print("\nError al descargar canción. Presiona 1 para volver a intentarlo.")
                         download = 0                                              

@@ -4,7 +4,7 @@ def playMusic(song):
     
     mixer.init()
     newSong = song 
-    mixer.music.load("musica\\cliente1\\descargas\\" + newSong + ".mp3")
+    mixer.music.load("musica\\cliente1\\descargas\\" + newSong)
     mixer.music.set_volume(0.7)
     mixer.music.play()
 
@@ -30,7 +30,7 @@ def playMusic(song):
             mixer.music.stop()
             newSong = str(input("Escribe el nombre de otra cancion: "))
             try:
-                mixer.music.load("musica\\cliente1\\descargas\\" + newSong + ".mp3")
+                mixer.music.load("musica\\cliente1\\descargas\\" + newSong)
                 mixer.music.set_volume(0.7)
                 mixer.music.play() 
             except: 

@@ -184,48 +184,55 @@ def shareSong(json_nameFile, json_op):
     op = json.loads(json_op)
 
     file = ""
+    newNameFile = ""
     lsTracks = sendTrackClient()
     lsTrackAlbums, lsAlbums = sendAlbumClient()
     for track in lsTracks:
         if track[0] == nameFile or track[op] == nameFile:
             file = track[3]
+            newNameFile = track[0]
             print("\nCompartiste un archivo! Nombre: ", track[0])
 
     for track in lsTrackAlbums:
         if track[0] == nameFile or track[op] == nameFile:
             file = track[3]
+            newNameFile = track[0]
             print("\nCompartiste un archivo! Nombre: ", track[0])       
 
     if file == "":
         print("\nError. El archivo no fue encontrado!")
 
-    return file
+    return file, newNameFile
 
 
 def shareAlbum(json_lsNameFile, json_op):
 
-    lsnameFile = json.loads(json_lsNameFile)
+    lsNameFile = json.loads(json_lsNameFile)
     op = json.loads(json_op)
 
     lsFile = []
+    lsNewNameFile = []
     lsTracks = sendTrackClient()
     lsTrackAlbums, lsAlbums = sendAlbumClient()
 
     for nf in lsNameFile:
         for track in lsTracks:
-            if track[0] == nf or track[op] == nf:
-                lsFile.append(track[3])
+            if track[0] == nf[0] or track[op] == nf[0]:
+                file = [track[0], track[1], track[2], track[3], track[4]]
+                lsFile.append(file)
+
                 print("\nCompartiste un archivo! Nombre: ", track[0])
 
         for track in lsTrackAlbums:
-            if track[0] == nf or track[op] == nf:
-                lsFile.append(track[3])
+            if track[0] == nf[0] or track[op] == nf[0]:
+                file = [track[0], track[1], track[2], track[3], track[4]]
+                lsFile.append(file)
                 print("\nCompartiste un archivo! Nombre: ", track[0])       
 
     if len(lsFile) == 0:
         print("\nError. El archivo no fue encontrado!")
 
-    return lsFile   
+    return lsFile      
 
 
 #--------------------------------------------------HILOS----------------------------------------------------------

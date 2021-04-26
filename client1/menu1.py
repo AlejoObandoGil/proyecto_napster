@@ -63,10 +63,11 @@ def downloadMenu(client, username, op, song):
                     try:
                         if option == 1 or option == 2:
                             # Llamamos la funcion que busca el archivo en la carpeta del cliente de donde se descargara
-                            file_data = clienteCliente.shareSong(json_song, json_option)
+                            global name_file
+                            file_data, name_file = clienteCliente.shareSong(json_song, json_option)
                             # file_data = json.loads(json_file_data)
                             # Guardamos la cancion en el directorio
-                            dirDownload = "musica\\cliente1\\descargas\\" + song + ".mp3"                       
+                            dirDownload = "musica\\cliente1\\descargas\\" + name_file                      
                             file = open(dirDownload, "wb")
                             file.write(file_data.data)
                             print("\nCanción descargada con éxito!\nLa ubicación del archivo es: ", dirDownload)
@@ -75,12 +76,14 @@ def downloadMenu(client, username, op, song):
                             file.close()
                         elif option == 3:
                             # Llamamos la funcion que busca el archivo en la carpeta del cliente de donde se descargara
-                            ls_File_data = clienteCliente.shareAlbum(json_song, json_option)
+                            ls_file_data = clienteCliente.shareAlbum(json_lsNewSong, json_option)
                             for file_data in ls_file_data:
                                 # Guardamos la cancion en el directorio
-                                dirDownload = "musica\\cliente1\\descargas\\" + song + ".mp3"                       
+                                dirDownload = "musica\\cliente1\\descargas\\" + file_data[0]
+                                global name_file_album  
+                                name_file_album = file_data[0]              
                                 file = open(dirDownload, "wb")
-                                file.write(file_data.data)
+                                file.write(file_data[3].data)
                                 print("\nCanción descargada con éxito!\nLa ubicación del archivo es: ", dirDownload)
                                 download = 1
                                 # Cerramos el archivo 
@@ -91,8 +94,11 @@ def downloadMenu(client, username, op, song):
                 
             elif option2 == "2":
                 # llamamos la funcion reproductor de musica
-                if download == 1:
-                    playMusic(song)
+                if download == 1 and option == 3:
+                    playMusic(name_file_album)
+                if download == 1: 
+                    if (option == 1 or option == 2):
+                        playMusic(name_file)                    
                 else:
                     print("\nLa canción # ", song, " # no esta descargada.\n" )    
                 

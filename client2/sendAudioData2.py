@@ -103,7 +103,7 @@ def sendTrackClient():
                     file.close()
                     
                     # Creamos una lista con los metadatos de cada cancion y agregamos estas listas a otra lista para tener una matriz de canciones
-                    lsDataTracks = [name, temp_track.title, temp_track.artist, file_data]
+                    lsDataTracks = [name, temp_track.title, temp_track.artist, file_data, temp_track.album]
                     lsTracks.append(lsDataTracks)                   
                     
                 except TinyTagException:
@@ -131,12 +131,11 @@ def sendAlbumClient():
                             temp_track = TinyTag.get(root + "\\" + trackName)
                             
                             try:
-                                file = open("musica\\cliente1\\Albums1\\" + dirName + "\\" + trackName, "rb")
+                                file = open("musica\\cliente2\\Albums2\\" + dirName + "\\" + trackName, "rb")
                                 file_data = file.read()
-                                file.close()
                             except:
                                 print("Error al leer archivo")
-                            
+                            file.close()
 
                             lsDataTracks = [trackName, temp_track.title, temp_track.artist, file_data, dirName]
                             lsTracks.append(lsDataTracks)
@@ -147,5 +146,5 @@ def sendAlbumClient():
 
     return lsTracks, lsAlbums
 
-# sendTrackClient("username")
-# sendAlbumClient("usernam")    
+# sendTrackClient()
+# sendAlbumClient()    

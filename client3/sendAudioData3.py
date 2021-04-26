@@ -10,7 +10,7 @@ def sendTrack(username):
     numTrack = 0
   
     # Este for lee el directorio raiz, sus subcarpetas y archivos. El metodo walk sirve para leer un directorio    
-    for root, dirs, files, in os.walk("musica\\cliente2\\canciones2"):
+    for root, dirs, files, in os.walk("musica\\cliente3\\canciones3"):
 
         for name in files:
             # Si extension del archivo es tipo musica agregamos a lista
@@ -54,12 +54,12 @@ def sendAlbum(username):
 
     # Con este for buscaremos en la carpeta raiz luego las subcarpetas y archivos
     # Es for hace la funcion de buscar las canciones
-    for root, dirs, files, in os.walk("musica\\cliente2\\Albums2"):
+    for root, dirs, files, in os.walk("musica\\cliente3\\Albums3"):
 
         for dirName in dirs:
             lsAlbums.append(dirName)
             numAlbum += 1
-            for root, dirs, files, in os.walk("musica\\cliente2\\Albums2\\" + dirName):
+            for root, dirs, files, in os.walk("musica\\cliente3\\Albums3\\" + dirName):
                 for trackName in files:                              
                     if trackName.endswith((".mp3", ".mp4a", ".flac", ".alac", ".wav", ".wma", ".ogg")):               
                         try:
@@ -86,7 +86,7 @@ def sendTrackClient():
     lsDataTracks = []
     lsTracks = [] 
     # Este for lee el directorio raiz, sus subcarpetas y archivos. El metodo walk sirve para leer un directorio    
-    for root, dirs, files, in os.walk("musica\\cliente2\\canciones2\\"):
+    for root, dirs, files, in os.walk("musica\\cliente3\\canciones3\\"):
 
         for name in files:
             # Si extension del archivo es tipo musica agregamos a lista
@@ -96,7 +96,7 @@ def sendTrackClient():
                     # Creamos un objeto tinyTag por cada cancion y obtenemos sus metadatos y los guardamos en una lista
                     temp_track = TinyTag.get(root + "\\" + name)
                     try:
-                        file = open("musica\\cliente2\\canciones2\\" + name, "rb")
+                        file = open("musica\\cliente3\\canciones3\\" + name, "rb")
                         file_data = file.read()
                     except:
                         print("Error al leer archivo")
@@ -120,18 +120,18 @@ def sendAlbumClient():
     lsTracks = []
     # Con este for buscaremos en la carpeta raiz luego las subcarpetas y archivos
     # Es for hace la funcion de buscar las canciones
-    for root, dirs, files, in os.walk("musica\\cliente2\\Albums2"):
+    for root, dirs, files, in os.walk("musica\\cliente3\\Albums3"):
 
         for dirName in dirs:
             lsAlbums.append(dirName)
-            for root, dirs, files, in os.walk("musica\\cliente2\\Albums2\\" + dirName):
+            for root, dirs, files, in os.walk("musica\\cliente3\\Albums3\\" + dirName):
                 for trackName in files:                              
                     if trackName.endswith((".mp3", ".mp4a", ".flac", ".alac", ".wav", ".wma", ".ogg")):               
                         try:
                             temp_track = TinyTag.get(root + "\\" + trackName)
                             
                             try:
-                                file = open("musica\\cliente2\\Albums2\\" + dirName + "\\" + trackName, "rb")
+                                file = open("musica\\cliente3\\Albums3\\" + dirName + "\\" + trackName, "rb")
                                 file_data = file.read()
                             except:
                                 print("Error al leer archivo")

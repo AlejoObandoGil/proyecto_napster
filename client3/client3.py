@@ -25,11 +25,11 @@ portTest = 2869
 global host3
 global port3
 host3 = "127.0.0.1"
-port3 = 9798
+port3 = 9797
 host4 = "127.0.0.1"
-port4 = 9698
-# host5 = "127.0.0.1"
-# port5 = 9598
+port4 = 9697
+host5 = "127.0.0.1"
+port5 = 9597
 
 # Restrict to a particular path.
 class RequestHandler(SimpleXMLRPCRequestHandler):
@@ -171,15 +171,16 @@ class ClientThread2(threading.Thread):
              if clientConnected == False:
                 desconected = menu(client2, username)
 
-#----------------------------------------FINAL CLIENTE---------------------------------------------- 
-   
+#----------------------------------------FINAL CLIENTE----------------------------------------------    
 #-------------------------------------------SERVIDOR------------------------------------------------
 #---------------------------------------------------------------------------------------------------
 
 #conexion tipo servidor para el cliente que quiere descargar una cancion 
 serverCli = SimpleXMLRPCServer((host3, port3), requestHandler=RequestHandler, allow_none=True) 
 serverCli.register_introspection_functions()
-
+#conexion tipo servidor para el cliente que quiere descargar una cancion 
+serverCli = SimpleXMLRPCServer((host4, port4), requestHandler=RequestHandler, allow_none=True) 
+serverCli.register_introspection_functions()
 
 def shareSong(json_nameFile, json_op):
 
@@ -214,6 +215,7 @@ def shareAlbum(json_lsNameFile, json_op):
     op = json.loads(json_op)
 
     lsFile = []
+    lsNewNameFile = []
     lsTracks = sendTrackClient()
     lsTrackAlbums, lsAlbums = sendAlbumClient()
 
@@ -250,6 +252,7 @@ class ClientServerThread(threading.Thread):
          serverCli.register_function(shareSong) 
          serverCli.register_function(shareAlbum)  
          serverCli.serve_forever()
+
 
 #----------------------------------------------FINAL SERVIDOR-----------------------------------------------  
 

@@ -85,7 +85,6 @@ def downloadMenu(client, username, op, song):
                             download = 1
                             # Cerramos el archivo 
                             file.close()
-
                         elif option == 3:
                             # Llamamos la funcion que busca el archivo en la carpeta del cliente de donde se descargara
                             ls_file_data = clienteCliente.shareAlbum(json_lsNewSong, json_option)
@@ -138,18 +137,22 @@ def menu(client, username):
         option = input("Opcion >>> ")
 
         if option == "1":   
+
             song = input("Escribe el nombre de una canción: ")           
             downloadMenu(client, username, option, song)
             
         elif option == "2":
+
             artist = input("Escribe el nombre de un artista: ")
             downloadMenu(client, username, option, artist)
                     
         elif option == "3":
+
             album = input("Escribe el nombre de un álbum: ")
             downloadMenu(client, username, option, album)
 
         elif option == "0":
+
             option3 = input("Seguro desea salir de NAPSTER?\n 1. Si / 2. No : ")
             if option3 == "1":
                 print("\nCerrando cliente NAPSTER...")
@@ -160,6 +163,7 @@ def menu(client, username):
                 pass
             else:
                 print("Digite una opción válida!")
+
         else:
             print("Digite una opción válida!")
 

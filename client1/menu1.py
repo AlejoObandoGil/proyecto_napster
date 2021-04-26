@@ -7,6 +7,10 @@ from xmlrpc.server import SimpleXMLRPCRequestHandler
 
 from musicPlayer1 import playMusic
 
+# Servidor2
+host2 = "127.0.0.1"
+port2 = 9899
+
 def downloadMenu(client, username, op, song):
 
     option = int(op)
@@ -15,9 +19,15 @@ def downloadMenu(client, username, op, song):
 
     json_song = json.dumps(song)
     json_option = json.dumps(option)
-
-    # Instancia de la funcion buscar del servidor y guardamos datos de la cancion y usuario en cliente   
-    json_lsNewSong, json_lsNewDir, json_message = client.searchTrack(json_song, json_option)
+    try:
+        # Instancia de la funcion buscar del servidor y guardamos datos de la cancion y usuario en cliente   
+        json_lsNewSong, json_lsNewDir, json_message = client.searchTrack(json_song, json_option)
+    except:
+        # Crear conexion para un Servidor RPC, con el metodo client de xmlrpc 
+        client = xmlrpc.client.ServerProxy('http://' + host2 + ':' + str(port2), allow_none=True)
+        print("\nEl servidor principal no responde...Cliente conectando a servidor Secundario...")   
+        # Instancia de la funcion buscar del servidor y guardamos datos de la cancion y usuario en cliente   
+        json_lsNewSong, json_lsNewDir, json_message = client.searchTrack(json_song, json_option) 
 
     lsNewSong = json.loads(json_lsNewSong)
     lsNewDir = json.loads(json_lsNewDir)
@@ -36,7 +46,7 @@ def downloadMenu(client, username, op, song):
             print("\nLista de canciones encontradas.")
             for Track in lsNewSong:
                 print("\n- Nombre cancion:", Track[0],"- Titulo:", Track[1], "- Artista:", Track[2], "- Álbum:", Track[3])
-                print("- Duracion: %.2f", Track[4], "- Tamaño:", Track[5], "Bytes - Usuario:", Track[6])
+                print("- Duracion: ", Track[4], "- Tamaño:", Track[5], "Bytes - Usuario:", Track[6])
             for direction in lsNewDir:
                 userServer = direction[0]
                 hostServer = direction[1]
@@ -74,6 +84,7 @@ def downloadMenu(client, username, op, song):
                             download = 1
                             # Cerramos el archivo 
                             file.close()
+                            
                         elif option == 3:
                             # Llamamos la funcion que busca el archivo en la carpeta del cliente de donde se descargara
                             ls_file_data = clienteCliente.shareAlbum(json_lsNewSong, json_option)
@@ -107,7 +118,6 @@ def downloadMenu(client, username, op, song):
 
             else:
                 print("Digite una opción válida!")
-
             print("\n_______________________________________________________________________________________________________________________________________________________")             
     else: 
         pass    
@@ -126,22 +136,18 @@ def menu(client, username):
         option = input("Opcion >>> ")
 
         if option == "1":   
-
             song = input("Escribe el nombre de una canción: ")           
             downloadMenu(client, username, option, song)
             
         elif option == "2":
-
             artist = input("Escribe el nombre de un artista: ")
             downloadMenu(client, username, option, artist)
                     
         elif option == "3":
-
             album = input("Escribe el nombre de un álbum: ")
             downloadMenu(client, username, option, album)
 
         elif option == "0":
-
             option3 = input("Seguro desea salir de NAPSTER?\n 1. Si / 2. No : ")
             if option3 == "1":
                 print("\nCerrando cliente NAPSTER...")  
@@ -153,7 +159,6 @@ def menu(client, username):
                 pass
             else:
                 print("Digite una opción válida!")
-
         else:
             print("Digite una opción válida!")
             

@@ -26,24 +26,17 @@ port2 = 9898
 host3 = "127.0.0.1"
 port3 = 9897
 
-# Direccion de servidor Secundario
-# hostS = "127.0.0.1"
-# portS = 8999
-
 portTest = 2869
 
 # Restrict to a particular path.
 class RequestHandler(SimpleXMLRPCRequestHandler):
     rpc_paths = ('/RPC2',)
 
-
 # Conexion para clientes
 server1 = SimpleXMLRPCServer((host1, port1), requestHandler=RequestHandler, allow_none=True) 
 server1.register_introspection_functions()
 server2 = SimpleXMLRPCServer((host2, port2), requestHandler=RequestHandler, allow_none=True) 
 server2.register_introspection_functions()
-# server3 = SimpleXMLRPCServer((host3, port3), requestHandler=RequestHandler, allow_none=True) 
-# server3.register_introspection_functions()
 
 # Variables globales
 lsTotalDataCli = []
@@ -132,19 +125,22 @@ def searchTrack(json_search, json_op):
         # Se busca la cancion por los dos primeros posiciones de la lista
         # nombre del archivo y titulo del archivo
         if track[0] == search or track[op] == search:
-            newSong = [track[0], track[1], track[2], track[3], track[4], track[5]]
-            # S la cancion se encuentra gardamos todos sus datos en una lista y guardamos en una lista de listas
+            newSong = [track[0], track[1], track[2], track[3], track[4], track[5], track[6]]
+            # Si la cancion se encuentra gardamos todos sus datos en una lista y guardamos en una lista de listas
             lsNewSong.append(newSong)
             # Ahora comparamos los usuarios para conocer su puerto y direccion
             for usern in lsTotalDataCli:
-                if usern[0] == newSong[5]:
+                if usern[0] == newSong[6]:
                     # Guardamos en una lisat de listas
                     lsNewDir.append(usern)
             if op == 1:
                 message = "Cancion encontrada!"           
                 print("\n" + message)
-            else:
+            elif op == 2:
                 message = "Artista encontrado!"           
+                print("\n" + message)
+            else:    
+                message = "Album encontrado!"           
                 print("\n" + message)
 
     # Si la lista esta vacia no encontro ninguna cancion        
@@ -153,7 +149,10 @@ def searchTrack(json_search, json_op):
         print("\n" + message)
     elif  len(lsNewSong) == 0 and op == 2:
         message = "Nombre incorrecto. El artista no se encuentra!"
-        print("\n" + message)   
+        print("\n" + message)
+    elif len(lsNewSong) == 0 and op == 3: 
+        message = "Nombre incorrecto. El album no se encuentra!"
+        print("\n" + message)       
 
     print(lsNewSong)
 
@@ -176,7 +175,6 @@ class ServerThread(threading.Thread):
          server1.register_function(listenClientData)
          server1.register_function(listenClientSong)
          server1.register_function(listenClientAlbum)
-        #  server1.handle_request()
 
          server1.register_function(searchTrack)
          server1.serve_forever()
@@ -187,8 +185,7 @@ class ServerThread2(threading.Thread):
 	def _init_(self):
 		threading.Thread._init_(self)
 
-	def run(self):
-        
+	def run(self):       
          server2.register_function(connectionExist)    
          server2.register_function(listenClientData)
          server2.register_function(listenClientSong)
@@ -197,30 +194,16 @@ class ServerThread2(threading.Thread):
 
          server2.register_function(searchTrack)
          print("Esperando Peticion del cliente...")
-
          server2.serve_forever()
-        
-# class ServerThread2(threading.Thread):
-# 	def _init_(self):
-# 		threading.Thread._init_(self)
-
-# 	def run(self):         
-        # server3.register_function(listenClientData)
-        #  server3.register_function(listenClientSong)
-        #  server3.register_function(listenClientAlbum)
-        #  server3.register_function(searchTrack)
-        #  print("Servidor Conectado...")
-        #  server3.handle_request()
-        #  server3.handle_request()
-        #  server3.handle_request()
-        #  print("cerrado")
+         
 
 if __name__=="__main__":
 
     serverReceive1 = ServerThread()
     serverReceive1.start()  
     serverReceive2 = ServerThread2()
-    serverReceive2.start()    
+    serverReceive2.start() 
+   
 
 
   

@@ -21,7 +21,7 @@ def sendTrack(username):
                     temp_track = TinyTag.get(root + "\\" + name)
 
                     d = str(temp_track.duration)
-                    durationMinute = round(float(d), 2)
+                    durationMinute = round(float(d), 0)
                     duration = str(datetime.timedelta(seconds=durationMinute))
                     
                     # Creamos una lista con los metadatos de cada cancion y agregamos estas listas a otra lista para tener una matriz de canciones
@@ -58,7 +58,7 @@ def sendAlbum(username):
                             temp_track = TinyTag.get(root + "\\" + trackName)
 
                             d = str(temp_track.duration)
-                            durationMinute = round(float(d), 2)
+                            durationMinute = round(float(d), 0)
                             duration = str(datetime.timedelta(seconds=durationMinute))
                             
                             lsDataTracks = [trackName, temp_track.title, temp_track.artist, dirName, duration, temp_track.filesize, username]

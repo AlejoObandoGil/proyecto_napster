@@ -10,7 +10,7 @@ def playMusic(song):
 
     while True:
         print("\n_______________________________________________________________________________________________________________________________________________________")  
-        print("\n *REPRODUCTOR DE DESCARGAS*")
+        print("\n *REPRODUCTOR DE MUSICA DESCARGAS*")
         print("\n  Nombre de cancion:", newSong)
         print("\n 1. Reproducir")
         print(" 2. Detener")
